@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Matrix {
     private CustomFloat[][] data;
     private int rows;
@@ -30,6 +32,48 @@ public class Matrix {
         this.elementsTotalBits = data[0][0].getTotalBits();
     }
 
+    public Matrix(String input, int totalBits, int exponentBits) {
+        // Split the input by semicolons or newlines to get rows
+        String[] rows = input.split("[;\\n]");
+        this.rows = rows.length;
+
+        // Initialize the matrix with the number of rows
+        this.data = new CustomFloat[rows.length][];
+
+        // Iterate through the rows
+        for (int i = 0; i < rows.length; i++) {
+            // Split each row by space to get individual elements
+            String[] elements = rows[i].trim().split("\\s+");
+            this.cols = elements.length;
+
+            // Initialize the row for this matrix row
+            this.data[i] = new CustomFloat[elements.length];
+
+            // Parse each element as a CustomFloat
+            for (int j = 0; j < elements.length; j++) {
+                float value = Float.parseFloat(elements[j].trim());
+                this.data[i][j] = new CustomFloat(value, totalBits, exponentBits);
+            }
+        }
+    }
+
+    public Matrix(int rows, int cols, int elementsTotalBits, int elementsExponentBits, float minValue, float maxValue) {
+        this.rows = rows;
+        this.cols = cols;
+        this.elementsTotalBits = elementsTotalBits;
+        this.elementsExponentBits = elementsExponentBits;
+        this.data = new CustomFloat[rows][cols];
+
+        Random random = new Random();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                float randomValue = minValue + (random.nextFloat() * (maxValue - minValue));
+                this.data[i][j] = new CustomFloat(randomValue, elementsTotalBits, elementsExponentBits);
+            }
+        }
+    }
+
+
     // Get the value at a specific row and column
     public CustomFloat get(int row, int col) {
         return data[row][col];
@@ -50,6 +94,22 @@ public class Matrix {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 CustomFloat sum = this.data[i][j].add(other.data[i][j]);
+                result.set(i, j, sum);
+            }
+        }
+        return result;
+    }
+
+    // Add another matrix to this matrix
+    public Matrix substract(Matrix other) {
+        if (this.rows != other.rows || this.cols != other.cols) {
+            throw new IllegalArgumentException("Matrix dimensions must match for substraction");
+        }
+
+        Matrix result = new Matrix(this.rows, this.cols, this.elementsTotalBits, this.elementsExponentBits);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                CustomFloat sum = this.data[i][j].substract(other.data[i][j]);
                 result.set(i, j, sum);
             }
         }
@@ -82,7 +142,7 @@ public class Matrix {
             for (int j = 0; j < cols; j++) {
                 sb.append(data[i][j].toString()).append(" ");
             }
-            if (i < rows - 1) {
+            if (i < (rows - 1)) {
                 sb.append("\n");
             }
         }

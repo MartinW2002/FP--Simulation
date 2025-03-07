@@ -48,6 +48,11 @@ public class CustomFloat {
         return new CustomFloat(result, totalBits, exponentBits);
     }
 
+    public CustomFloat substract(CustomFloat other) {
+        float result = this.toFloat() - other.toFloat();
+        return new CustomFloat(result, totalBits, exponentBits);
+    }
+
     public CustomFloat multiply(CustomFloat other, int totalBits, int exponentBits) {
         float result = this.toFloat() * other.toFloat();
         return new CustomFloat(result, totalBits, exponentBits);
@@ -55,7 +60,8 @@ public class CustomFloat {
 
     @Override
     public String toString() {
-        return String.format("%s (%.3f)", Integer.toBinaryString(value & ((1 << totalBits) - 1)), toFloat());
+//        return String.format("%s (%.3f)", Integer.toBinaryString(value & ((1 << totalBits) - 1)), toFloat());
+        return String.valueOf(toFloat());
     }
 
     public int getTotalBits() {
