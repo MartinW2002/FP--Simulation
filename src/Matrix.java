@@ -148,4 +148,15 @@ public class Matrix {
         }
         return sb.toString();
     }
+
+    public double norm() {
+        double sum = 0.0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                double value = data[i][j].toFloat();
+                sum += value * value;
+            }
+        }
+        return Math.sqrt(sum);
+    }
 }
