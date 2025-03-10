@@ -1,11 +1,14 @@
-public class CustomFloat {
+import java.util.Arrays;
 
+public class CustomFloat {
     private final int totalBits;
     private final int exponentBits;
     private final int mantissaBits;
     private final int bias;
 
-    private int value;
+    private boolean sign;
+    private boolean[] exponent;
+    private boolean[] mantissa;
 
     public CustomFloat(float number, int totalBits, int exponentBits) {
         this.totalBits = totalBits;
@@ -13,80 +16,118 @@ public class CustomFloat {
         this.mantissaBits = totalBits - exponentBits - 1;
         this.bias = (1 << (exponentBits - 1)) - 1;
 
-        this.value = floatToCustom(number);
+        encodeFloat(number);
     }
 
-    public CustomFloat(int value, int totalBits, int exponentBits) {
-        this.totalBits = totalBits;
-        this.exponentBits = exponentBits;
-        this.mantissaBits = totalBits - exponentBits - 1;
-        this.bias = (1 << (exponentBits - 1)) - 1;
+    private void encodeFloat(float number) {
+        if (number == 0) {
+            sign = false;
+            exponent = new boolean[exponentBits];
+            mantissa = new boolean[mantissaBits];
+            return;
+        }
 
-        this.value = value;
-    }
-
-    private int floatToCustom(float number) {
-        if (number == 0) return 0; // Special case for zero
-
-        int sign = (number < 0) ? 1 : 0;
+        sign = number < 0;
         number = Math.abs(number);
 
-        int exponent = (int) (Math.log(number) / Math.log(2));  // Unbiased exponent
+        int exp = (int) (Math.log(number) / Math.log(2));
+        float fraction = number / ((float) Math.pow(2, exp)) - 1;
+        exp += bias;
 
-        // Handle underflow (subnormal numbers)
-        if (exponent < -bias + 1) {
-            // Subnormal number case
-            exponent = 0;
-            number *= (1 << (bias - 1)); // Scale up to fit in subnormal range
-        } else {
-            // Normalized number case
-            number /= Math.pow(2, exponent); // Normalize to [1,2)
-            exponent += bias; // Apply bias
+        // Handle underflow
+        if (exp <= 0) {
+            sign = false;
+            exponent = new boolean[exponentBits];
+            mantissa = new boolean[mantissaBits];
+            return;
         }
 
-        // Check for overflow (exponent too large)
-        if (exponent >= (1 << exponentBits) - 1) {
-            // Set to max exponent (infinity representation)
-            exponent = (1 << exponentBits) - 1;
-            return (sign << (totalBits - 1)) | (exponent << mantissaBits);
+        // Handle overflow
+        if (exp > (1 << exponentBits) - 1) {
+            exponent = intToBooleanArray((1 << exponentBits) - 1, exponentBits); // Max exponent (infinity)
+            mantissa = new boolean[mantissaBits]; // Zero mantissa TODO is dit correct?
+            return;
         }
 
-        // Compute the mantissa
-        float fraction = number - 1;  // Remove leading 1
-        int fractionBits = (int) (fraction * (1 << mantissaBits)) & ((1 << mantissaBits) - 1);
+        exponent = intToBooleanArray(exp, exponentBits);
+        mantissa = fractionToBooleanArray(fraction, mantissaBits);
+    }
 
-        // Assemble the final FP representation
-        return (sign << (totalBits - 1)) | ((exponent & ((1 << exponentBits) - 1)) << mantissaBits) | fractionBits;
+    public static boolean[] intToBooleanArray(int value, int size) {
+        boolean[] bits = new boolean[size];
+        for (int i = size - 1; i >= 0; i--) {
+            bits[size - i - 1] = (value & (1 << i)) != 0;
+        }
+        return bits;
+    }
+
+    private boolean[] fractionToBooleanArray(float fraction, int size) {
+        boolean[] bits = new boolean[size];
+        for (int i = 0; i < size; i++) {
+            fraction *= 2;
+            if (fraction >= 1) {
+                bits[i] = true;
+                fraction -= 1;
+            }
+        }
+        return bits;
     }
 
     public float toFloat() {
-        if (value == 0) return 0;
-        int sign = (value & (1 << (totalBits - 1))) != 0 ? -1 : 1;
-        int exponent = ((value >> mantissaBits) & ((1 << exponentBits) - 1)) - bias;
-        float fraction = 1 + ((value & ((1 << mantissaBits) - 1)) / (float) (1 << mantissaBits));
-        return sign * fraction * (float) Math.pow(2, exponent);
+        int exp = booleanArrayToInt(exponent);
+
+        // TODO Check for Inf, NaN
+
+        if (!sign && exp == 0 && isAllZero(mantissa))
+            return 0;
+
+        float fraction = 1.0f;
+        for (int i = 0; i < mantissa.length; i++) {
+            if (mantissa[i]) {
+                fraction += Math.pow(2, -(i + 1));
+            }
+        }
+        float value = (sign ? -1 : 1) * fraction * (float) Math.pow(2, exp - bias);
+        return value;
     }
 
-    public CustomFloat add(CustomFloat other) {
+    private boolean isAllZero(boolean[] array) {
+        for (boolean b : array) {
+            if (b) return false;
+        }
+        return true;
+    }
+
+    private int booleanArrayToInt(boolean[] bits) {
+        int value = 0;
+        for (int i = 0; i < bits.length; i++) {
+            if (bits[i]) {
+                value += (1 << (bits.length - 1 - i));
+            }
+        }
+        return value;
+    }
+
+    public CustomFloat plus(CustomFloat other) {
         float result = this.toFloat() + other.toFloat();
         return new CustomFloat(result, totalBits, exponentBits);
     }
 
-    public CustomFloat substract(CustomFloat other) {
+    public CustomFloat minus(CustomFloat other) {
         float result = this.toFloat() - other.toFloat();
-        CustomFloat customFloat = new CustomFloat(result, totalBits, exponentBits);
-        return customFloat;
+        return new CustomFloat(result, totalBits, exponentBits);
     }
 
-    public CustomFloat multiply(CustomFloat other, int totalBits, int exponentBits) {
+    public CustomFloat times(CustomFloat other, int totalBits, int exponentBits) {
         float result = this.toFloat() * other.toFloat();
         return new CustomFloat(result, totalBits, exponentBits);
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%.3f)", Integer.toBinaryString(value & ((1 << totalBits) - 1)), toFloat());
-//        return String.valueOf(toFloat());
+//        return String.format("Sign: %b, Exponent: %s, Mantissa: %s (%.3f)",
+//                sign, Arrays.toString(exponent), Arrays.toString(mantissa), toFloat());
+        return toFloat() + " (" + getBitRepresentation() + ")";
     }
 
     public int getTotalBits() {
@@ -96,4 +137,26 @@ public class CustomFloat {
     public int getExponentBits(){
         return exponentBits;
     }
+
+    public String getBitRepresentation() {
+        StringBuilder sb = new StringBuilder();
+        if (sign)
+            sb.append("1");
+        else
+            sb.append("0");
+        for (boolean b : exponent) {
+            if (b)
+                sb.append("1");
+            else
+                sb.append("0");
+        }
+        for (boolean b : mantissa) {
+            if (b)
+                sb.append("1");
+            else
+                sb.append("0");
+        }
+        return sb.toString();
+    }
+
 }

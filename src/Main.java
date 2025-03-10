@@ -1,7 +1,9 @@
+import java.util.Arrays;
+
 public class Main {
-    public static void main1(String[] args) {
-        int totalBits1 = 8;
-        int exponentBits1 = 3;
+    public static void main(String[] args) {
+        int totalBits1 = 16;
+        int exponentBits1 = 5;
         int totalBits2 = 12;
         int exponentBits2 = 4;
 
@@ -16,11 +18,11 @@ public class Main {
 //        System.out.println(matrix2);
 //        System.out.println("Matrix 3:");
 //        System.out.println(matrix3);
-        System.out.println("Matrix 1:");
-        System.out.println(matrix1);
+//        System.out.println("Matrix 1:");
+//        System.out.println(matrix1);
 
         System.out.println("Matrix 1 * Matrix 2 (32 bit acc):");
-        Matrix product0 = matrix1.multiply(matrix2, 32, 8);
+        Matrix product0 = matrix1.times(matrix2, 64, 12);
         System.out.println(product0);
 
 //        System.out.println("Matrix 1 * Matrix 2 (8 bit acc):");
@@ -32,7 +34,7 @@ public class Main {
 //        System.out.println(product2);
 
         System.out.println("Matrix 1 * Matrix 2 (24 bit acc):");
-        Matrix product3 = matrix1.multiply(matrix2, 64, 16);
+        Matrix product3 = matrix1.times(matrix2, 24, 4);
         System.out.println(product3);
 
 //        System.out.println("\nDifference 8: ");
@@ -41,14 +43,11 @@ public class Main {
 //        System.out.println("\nDifference 12: ");
 //        System.out.println(product0.substract(product2).norm());
 
-        System.out.println("\nDifference 24: ");
-        System.out.println(product0.substract(product3));
+        System.out.println("\nDifference: ");
+        Matrix difference = product0.minus(product3);
+        System.out.println(difference);
+        System.out.println("Norm :" + difference.norm());
 
-        System.out.println(new CustomFloat(0.813f, 8, 3));
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new CustomFloat(0.25f, 8, 3));
     }
 
 }

@@ -85,7 +85,7 @@ public class Matrix {
     }
 
     // Add another matrix to this matrix
-    public Matrix add(Matrix other) {
+    public Matrix plus(Matrix other) {
         if (this.rows != other.rows || this.cols != other.cols) {
             throw new IllegalArgumentException("Matrix dimensions must match for addition");
         }
@@ -93,23 +93,23 @@ public class Matrix {
         Matrix result = new Matrix(this.rows, this.cols, this.elementsTotalBits, this.elementsExponentBits);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                CustomFloat sum = this.data[i][j].add(other.data[i][j]);
+                CustomFloat sum = this.data[i][j].plus(other.data[i][j]);
                 result.set(i, j, sum);
             }
         }
         return result;
     }
 
-    // Add another matrix to this matrix
-    public Matrix substract(Matrix other) {
+    // Subtract another matrix to this matrix
+    public Matrix minus(Matrix other) {
         if (this.rows != other.rows || this.cols != other.cols) {
-            throw new IllegalArgumentException("Matrix dimensions must match for substraction");
+            throw new IllegalArgumentException("Matrix dimensions must match for subtraction");
         }
 
         Matrix result = new Matrix(this.rows, this.cols, this.elementsTotalBits, this.elementsExponentBits);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                CustomFloat sum = this.data[i][j].substract(other.data[i][j]);
+                CustomFloat sum = this.data[i][j].minus(other.data[i][j]);
                 result.set(i, j, sum);
             }
         }
@@ -117,7 +117,7 @@ public class Matrix {
     }
 
     // Multiply this matrix by another matrix
-    public Matrix multiply(Matrix other, int accTotalBits, int accExponentBits) {
+    public Matrix times(Matrix other, int accTotalBits, int accExponentBits) {
         if (this.cols != other.rows) {
             throw new IllegalArgumentException("Matrix dimensions must match for multiplication");
         }
@@ -127,7 +127,7 @@ public class Matrix {
             for (int j = 0; j < other.cols; j++) {
                 CustomFloat sum = new CustomFloat(0f, accTotalBits, accExponentBits);
                 for (int k = 0; k < this.cols; k++) {
-                    sum = sum.add(this.data[i][k].multiply(other.data[k][j], accTotalBits, accExponentBits));
+                    sum = sum.plus(this.data[i][k].times(other.data[k][j], accTotalBits, accExponentBits));
                 }
                 result.set(i, j, new CustomFloat(sum.toFloat(), elementsTotalBits, elementsExponentBits));
             }
