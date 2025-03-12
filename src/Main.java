@@ -2,15 +2,15 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        int totalBits1 = 16;
-        int exponentBits1 = 5;
+        int totalBits1 = 8;
+        int exponentBits1 = 3;
         int totalBits2 = 12;
         int exponentBits2 = 4;
 
 //        Matrix matrix3 = new Matrix("1 2 3 1 2 3 1 2 3; 4 5 6 4 5 6 4 5 6; 7 8 9 7 8 9 7 8 9", totalBits1, exponentBits1);
-
-        Matrix matrix1 = new Matrix(10, 10, totalBits1, exponentBits1, -50, 50);
-        Matrix matrix2 = new Matrix(10, 10, totalBits1, exponentBits1, -50, 50);
+        // TODO 32x32 and 256x256
+        Matrix matrix1 = Matrix.createRandomMatrix(10, 10, totalBits1, exponentBits1, -3, 3);
+        Matrix matrix2 = Matrix.createRandomMatrix(10, 10, totalBits1, exponentBits1, -3, 3);
 
 //        System.out.println("Matrix 1:");
 //        System.out.println(matrix1);
@@ -34,7 +34,7 @@ public class Main {
 //        System.out.println(product2);
 
         System.out.println("Matrix 1 * Matrix 2 (24 bit acc):");
-        Matrix product3 = matrix1.times(matrix2, 24, 4);
+        Matrix product3 = matrix1.times(matrix2, 8, 3);
         System.out.println(product3);
 
 //        System.out.println("\nDifference 8: ");
@@ -47,6 +47,10 @@ public class Main {
         Matrix difference = product0.minus(product3);
         System.out.println(difference);
         System.out.println("Norm :" + difference.norm());
+
+        // TODO Quantisation paper metric
+        // TODO MSE, Cosine similarity, Normalise norm of difference
+        // TODO Take FP32 data, quantisise to get distribution
 
     }
 

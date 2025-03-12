@@ -10,16 +10,19 @@ public class CustomFloat {
     private boolean[] exponent;
     private boolean[] mantissa;
 
+    // TODO Add enum
+
     public CustomFloat(float number, int totalBits, int exponentBits) {
         this.totalBits = totalBits;
         this.exponentBits = exponentBits;
         this.mantissaBits = totalBits - exponentBits - 1;
-        this.bias = (1 << (exponentBits - 1)) - 1;
+        this.bias = (1 << (exponentBits - 1)) - 1; // TODO Add bias as variable
 
         encodeFloat(number);
     }
 
     private void encodeFloat(float number) {
+        // TODO Even rounding!
         if (number == 0) {
             sign = false;
             exponent = new boolean[exponentBits];
@@ -44,8 +47,10 @@ public class CustomFloat {
 
         // Handle overflow
         if (exp > (1 << exponentBits) - 1) {
-            exponent = intToBooleanArray((1 << exponentBits) - 1, exponentBits); // Max exponent (infinity)
-            mantissa = new boolean[mantissaBits]; // Zero mantissa TODO is dit correct?
+            System.out.print("Overflow");
+            exponent = intToBooleanArray((1 << exponentBits) - 1, exponentBits);
+            mantissa = new boolean[mantissaBits];
+            Arrays.fill(mantissa, true);
             return;
         }
 
@@ -75,8 +80,6 @@ public class CustomFloat {
 
     public float toFloat() {
         int exp = booleanArrayToInt(exponent);
-
-        // TODO Check for Inf, NaN
 
         if (!sign && exp == 0 && isAllZero(mantissa))
             return 0;

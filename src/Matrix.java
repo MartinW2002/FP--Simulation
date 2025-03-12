@@ -7,6 +7,27 @@ public class Matrix {
     private int elementsTotalBits;
     private int elementsExponentBits;
 
+    public static Matrix createRandomMatrix(int rows, int cols, int elementsTotalBits, int elementsExponentBits, float minValue, float maxValue) {
+        return new Matrix(rows, cols, elementsTotalBits, elementsExponentBits, minValue, maxValue);
+    }
+
+    // Random
+    private Matrix(int rows, int cols, int elementsTotalBits, int elementsExponentBits, float minValue, float maxValue) {
+        this.rows = rows;
+        this.cols = cols;
+        this.elementsTotalBits = elementsTotalBits;
+        this.elementsExponentBits = elementsExponentBits;
+        this.data = new CustomFloat[rows][cols];
+
+        Random random = new Random();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                float randomValue = minValue + (random.nextFloat() * (maxValue - minValue));
+                this.data[i][j] = new CustomFloat(randomValue, elementsTotalBits, elementsExponentBits);
+            }
+        }
+    }
+
     // Constructor to create a matrix with given dimensions
     public Matrix(int rows, int cols, int elementsTotalBits, int elementsExponentBits) {
         this.rows = rows;
@@ -32,6 +53,7 @@ public class Matrix {
         this.elementsTotalBits = data[0][0].getTotalBits();
     }
 
+    // Input represents a matrix with spaces in between columns and semicolons or newlines in between rows
     public Matrix(String input, int totalBits, int exponentBits) {
         // Split the input by semicolons or newlines to get rows
         String[] rows = input.split("[;\\n]");
@@ -56,23 +78,6 @@ public class Matrix {
             }
         }
     }
-
-    public Matrix(int rows, int cols, int elementsTotalBits, int elementsExponentBits, float minValue, float maxValue) {
-        this.rows = rows;
-        this.cols = cols;
-        this.elementsTotalBits = elementsTotalBits;
-        this.elementsExponentBits = elementsExponentBits;
-        this.data = new CustomFloat[rows][cols];
-
-        Random random = new Random();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                float randomValue = minValue + (random.nextFloat() * (maxValue - minValue));
-                this.data[i][j] = new CustomFloat(randomValue, elementsTotalBits, elementsExponentBits);
-            }
-        }
-    }
-
 
     // Get the value at a specific row and column
     public CustomFloat get(int row, int col) {
@@ -125,6 +130,7 @@ public class Matrix {
         Matrix result = new Matrix(this.rows, other.cols, this.elementsTotalBits, this.elementsExponentBits);
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < other.cols; j++) {
+                // TODO Check different order
                 CustomFloat sum = new CustomFloat(0f, accTotalBits, accExponentBits);
                 for (int k = 0; k < this.cols; k++) {
                     sum = sum.plus(this.data[i][k].times(other.data[k][j], accTotalBits, accExponentBits));
