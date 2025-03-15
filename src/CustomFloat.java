@@ -12,6 +12,7 @@ public class CustomFloat {
 
     // TODO Add enum
 
+
     public CustomFloat(float number, int totalBits, int exponentBits) {
         this.totalBits = totalBits;
         this.exponentBits = exponentBits;
