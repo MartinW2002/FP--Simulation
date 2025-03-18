@@ -1,6 +1,8 @@
 import java.util.Arrays;
 
 public class CustomFloat {
+    private final FPType type;
+
     private final int totalBits;
     private final int exponentBits;
     private final int mantissaBits;
@@ -10,13 +12,11 @@ public class CustomFloat {
     private boolean[] exponent;
     private boolean[] mantissa;
 
-    // TODO Add enum
-
-
-    public CustomFloat(float number, int totalBits, int exponentBits) {
-        this.totalBits = totalBits;
-        this.exponentBits = exponentBits;
-        this.mantissaBits = totalBits - exponentBits - 1;
+    public CustomFloat(float number, FPType type) {
+        this.type = type;
+        this.totalBits = type.getTotalBits();
+        this.exponentBits = type.getExponentBits();
+        this.mantissaBits = type.getMantissaBits();
         this.bias = (1 << (exponentBits - 1)) - 1; // TODO Add bias as variable
 
         encodeFloat(number);
@@ -114,17 +114,17 @@ public class CustomFloat {
 
     public CustomFloat plus(CustomFloat other) {
         float result = this.toFloat() + other.toFloat();
-        return new CustomFloat(result, totalBits, exponentBits);
+        return new CustomFloat(result, type);
     }
 
     public CustomFloat minus(CustomFloat other) {
         float result = this.toFloat() - other.toFloat();
-        return new CustomFloat(result, totalBits, exponentBits);
+        return new CustomFloat(result, type);
     }
 
-    public CustomFloat times(CustomFloat other, int totalBits, int exponentBits) {
+    public CustomFloat times(CustomFloat other, FPType type) {
         float result = this.toFloat() * other.toFloat();
-        return new CustomFloat(result, totalBits, exponentBits);
+        return new CustomFloat(result, type);
     }
 
     @Override
@@ -132,6 +132,10 @@ public class CustomFloat {
 //        return String.format("Sign: %b, Exponent: %s, Mantissa: %s (%.3f)",
 //                sign, Arrays.toString(exponent), Arrays.toString(mantissa), toFloat());
         return toFloat() + " (" + getBitRepresentation() + ")";
+    }
+
+    public FPType getType() {
+        return type;
     }
 
     public int getTotalBits() {
@@ -162,5 +166,4 @@ public class CustomFloat {
         }
         return sb.toString();
     }
-
 }

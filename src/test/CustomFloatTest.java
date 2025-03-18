@@ -11,7 +11,7 @@ class CustomFloatTest {
 
     @BeforeEach
     void setUp() {
-        fp8_1 = new CustomFloat(12f, 8, 3);
+        fp8_1 = new CustomFloat(12f, FPType.E4M3_8);
     }
 
     @Test

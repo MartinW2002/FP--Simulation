@@ -4,42 +4,40 @@ public class Matrix {
     private CustomFloat[][] data;
     private int rows;
     private int cols;
-    private int elementsTotalBits;
-    private int elementsExponentBits;
+    private FPType type;
 
-    public static Matrix createRandomMatrix(int rows, int cols, int elementsTotalBits, int elementsExponentBits, float minValue, float maxValue) {
-        return new Matrix(rows, cols, elementsTotalBits, elementsExponentBits, minValue, maxValue);
+    public static Matrix createRandomMatrix(int rows, int cols, FPType type) {
+        return new Matrix(rows, cols, type, 0.1F);
     }
 
     // Random
-    private Matrix(int rows, int cols, int elementsTotalBits, int elementsExponentBits, float minValue, float maxValue) {
+    private Matrix(int rows, int cols, FPType type, float stdDev) {
         this.rows = rows;
         this.cols = cols;
-        this.elementsTotalBits = elementsTotalBits;
-        this.elementsExponentBits = elementsExponentBits;
+        this.type = type;
+
         this.data = new CustomFloat[rows][cols];
 
         Random random = new Random();
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                float randomValue = minValue + (random.nextFloat() * (maxValue - minValue));
-                this.data[i][j] = new CustomFloat(randomValue, elementsTotalBits, elementsExponentBits);
+                float randomValue = (float) (random.nextGaussian() * stdDev);
+                this.data[i][j] = new CustomFloat(randomValue, type);
             }
         }
     }
 
-    // Constructor to create a matrix with given dimensions
-    public Matrix(int rows, int cols, int elementsTotalBits, int elementsExponentBits) {
+    // Constructor to create an empty matrix with given dimensions
+    public Matrix(int rows, int cols, FPType type) {
         this.rows = rows;
         this.cols = cols;
-        this.elementsTotalBits = elementsTotalBits;
-        this.elementsExponentBits = elementsExponentBits;
+        this.type = type;
         data = new CustomFloat[rows][cols];
 
         // Initialize the matrix with zeros
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                data[i][j] = new CustomFloat(0f, elementsTotalBits, elementsExponentBits);
+                data[i][j] = new CustomFloat(0f, type);
             }
         }
     }
@@ -49,8 +47,7 @@ public class Matrix {
         this.rows = data.length;
         this.cols = data[0].length;
         this.data = data;
-        this.elementsExponentBits = data[0][0].getExponentBits();
-        this.elementsTotalBits = data[0][0].getTotalBits();
+        this.type = data[0][0].getType();
     }
 
     // Input represents a matrix with spaces in between columns and semicolons or newlines in between rows
@@ -74,7 +71,7 @@ public class Matrix {
             // Parse each element as a CustomFloat
             for (int j = 0; j < elements.length; j++) {
                 float value = Float.parseFloat(elements[j].trim());
-                this.data[i][j] = new CustomFloat(value, totalBits, exponentBits);
+                this.data[i][j] = new CustomFloat(value, type);
             }
         }
     }
@@ -86,6 +83,9 @@ public class Matrix {
 
     // Set the value at a specific row and column
     public void set(int row, int col, CustomFloat value) {
+        if (value.getType() != this.type) {
+            throw new IllegalArgumentException("Incompatible floating point representation");
+        }
         data[row][col] = value;
     }
 
@@ -95,7 +95,7 @@ public class Matrix {
             throw new IllegalArgumentException("Matrix dimensions must match for addition");
         }
 
-        Matrix result = new Matrix(this.rows, this.cols, this.elementsTotalBits, this.elementsExponentBits);
+        Matrix result = new Matrix(this.rows, this.cols, this.type);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 CustomFloat sum = this.data[i][j].plus(other.data[i][j]);
@@ -111,7 +111,7 @@ public class Matrix {
             throw new IllegalArgumentException("Matrix dimensions must match for subtraction");
         }
 
-        Matrix result = new Matrix(this.rows, this.cols, this.elementsTotalBits, this.elementsExponentBits);
+        Matrix result = new Matrix(this.rows, this.cols, this.type);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 CustomFloat sum = this.data[i][j].minus(other.data[i][j]);
@@ -122,20 +122,20 @@ public class Matrix {
     }
 
     // Multiply this matrix by another matrix
-    public Matrix times(Matrix other, int accTotalBits, int accExponentBits) {
+    public Matrix times(Matrix other, FPType accType) {
         if (this.cols != other.rows) {
             throw new IllegalArgumentException("Matrix dimensions must match for multiplication");
         }
 
-        Matrix result = new Matrix(this.rows, other.cols, this.elementsTotalBits, this.elementsExponentBits);
+        Matrix result = new Matrix(this.rows, other.cols, this.type);
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < other.cols; j++) {
                 // TODO Check different order
-                CustomFloat sum = new CustomFloat(0f, accTotalBits, accExponentBits);
+                CustomFloat sum = new CustomFloat(0f, accType);
                 for (int k = 0; k < this.cols; k++) {
-                    sum = sum.plus(this.data[i][k].times(other.data[k][j], accTotalBits, accExponentBits));
+                    sum = sum.plus(this.data[i][k].times(other.data[k][j], accType));
                 }
-                result.set(i, j, new CustomFloat(sum.toFloat(), elementsTotalBits, elementsExponentBits));
+                result.set(i, j, new CustomFloat(sum.toFloat(), this.type));
             }
         }
         return result;
