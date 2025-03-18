@@ -165,4 +165,27 @@ public class Matrix {
         }
         return Math.sqrt(sum);
     }
+
+    public int getNRows() {
+        return rows;
+    }
+
+    public int getNCols() {
+        return cols;
+    }
+
+    public static double MSE(Matrix matrix1, Matrix matrix2) {
+        double result = 0.0;
+        Matrix difference = matrix1.minus(matrix2);
+        int rows = difference.rows;
+        int cols = difference.cols;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                double value = difference.data[i][j].toFloat();
+                result += value * value;
+            }
+        }
+        result /= (rows * cols);
+        return result;
+    }
 }
