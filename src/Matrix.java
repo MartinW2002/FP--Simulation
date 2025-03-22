@@ -7,7 +7,7 @@ public class Matrix {
     private FPType type;
 
     public static Matrix createRandomMatrix(int rows, int cols, FPType type) {
-        return new Matrix(rows, cols, type, 0.1F);
+        return new Matrix(rows, cols, type, 0.05F);
     }
 
     // Random
