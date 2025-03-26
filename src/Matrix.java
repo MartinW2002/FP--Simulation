@@ -11,6 +11,7 @@ public class Matrix {
     }
 
     // Random
+    // TODO Student t distribution v = 3 iso Gaussian
     private Matrix(int rows, int cols, FPType type, float stdDev) {
         this.rows = rows;
         this.cols = cols;
@@ -203,6 +204,6 @@ public class Matrix {
             }
         }
         result /= (rows * cols);
-        return result;
+        return 1 - result;
     }
 }

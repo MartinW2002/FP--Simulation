@@ -4,18 +4,40 @@ public class Main {
     // TODO Take FP32 data, quantisise to get distribution
     // TODO 32x32 and 256x256
 
-    public static float STD_DEV = 0.01F;
+    // TODO Fout minder groot maken door volgorde groot klein, plus min
+
+    // Grafieken voor
+    // Gaus vs t distr
+    // E5M2, E4M3, E3M4
+    // Vergelijken mantissa en vergelijken exponent
+
+    public static float STD_DEV = 1.0F;
     public static FPType MAIN_TYPE = FPType.E4M3_8;
 
-    public static void main2(String[] args) {
-        System.out.println(Matrix.createRandomMatrix(32,32, FPType.E4M3_8));
+    public static void main(String[] args) {
+        int size = 10;
+        Matrix matrix1 = Matrix.createRandomMatrix(size, size, MAIN_TYPE);
+        Matrix matrix2 = Matrix.createRandomMatrix(size, size, MAIN_TYPE);
+
+        System.out.println(matrix1);
+
+        Matrix result1 = matrix1.times(matrix2, FPType.E5M3);
+        Matrix result3 = matrix1.times(matrix2, FPType.E5M5);
+        Matrix result12 = matrix1.times(matrix2, FPType.E5M10);
+
+        for (int i = 0; i < 4; i++) {
+            System.out.println(result1.get(i, i));
+            System.out.println(result3.get(i, i));
+            System.out.println(result12.get(i, i));
+            System.out.println("--");
+        }
     }
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         long startTime = System.nanoTime();
 
-        int size = 64;
-        int nIter = 100;
+        int size = 256;
+        int nIter = 1;
         int numTypes = FPType.values().length;
 
         double[] totalErrorArray = new double[numTypes];
@@ -32,8 +54,8 @@ public class Main {
 
                 Matrix product = matrix1.times(matrix2, type);
 
-//                double error = Matrix.MSE(exactProduct, product);
-                double error = Matrix.relativeError(exactProduct, product);
+                double error = Matrix.MSE(exactProduct, product);
+//                double error = Matrix.relativeError(exactProduct, product);
 
                 totalErrorArray[type.ordinal()] += error;
                 errorValues[type.ordinal()][i] = error;
