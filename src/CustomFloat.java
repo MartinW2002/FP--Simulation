@@ -35,19 +35,25 @@ public class CustomFloat {
         number = Math.abs(number);
 
         int exp = (int) (Math.log(number) / Math.log(2));
-        float fraction = number / ((float) Math.pow(2, exp)) - 1;
+        float fraction = (number / ((float) Math.pow(2, exp))) - 1;
         exp += bias;
 
         // Handle underflow
+//        if (exp <= 0) {
+//            sign = false;
+//            exponent = new boolean[exponentBits];
+//            mantissa = new boolean[mantissaBits];
+//            return;
+//        }
+
+        // Handle denormalized numbers (exp < 1)
         if (exp <= 0) {
-            sign = false;
-            exponent = new boolean[exponentBits];
-            mantissa = new boolean[mantissaBits];
-            return;
+            exp = 0; // Set exponent to zero for denormals
+            fraction = number / ((float) Math.pow(2, 1 - bias)); // Scale fraction
         }
 
         // Handle overflow
-        if (exp > (1 << exponentBits) - 1) {
+        if (exp > ((1 << exponentBits) - 1)) {
             System.out.print("Overflow");
             exponent = intToBooleanArray((1 << exponentBits) - 1, exponentBits);
             mantissa = new boolean[mantissaBits];
@@ -82,16 +88,24 @@ public class CustomFloat {
     public float toFloat() {
         int exp = booleanArrayToInt(exponent);
 
-        if (!sign && exp == 0 && isAllZero(mantissa))
+        if (!sign && (exp == 0) && isAllZero(mantissa))
             return 0;
 
         float fraction = 1.0f;
+
+        // Denormals
+        if (exp == 0) {
+            fraction = 0.0f;
+            exp = (exp - bias) + 1;
+        } else {
+            exp -= bias;
+        }
         for (int i = 0; i < mantissa.length; i++) {
             if (mantissa[i]) {
                 fraction += Math.pow(2, -(i + 1));
             }
         }
-        float value = (sign ? -1 : 1) * fraction * (float) Math.pow(2, exp - bias);
+        float value = (sign ? -1 : 1) * fraction * (float) Math.pow(2, exp);
         return value;
     }
 
