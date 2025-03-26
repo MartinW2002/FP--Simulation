@@ -1,0 +1,28 @@
+====== Relative Error ======
+
+STD_DEV: 0.1f, Size: 32 x 32
+
+E4M3_8: Mean Error = 0.8820061984862305, Std Dev = 0.0777110842019498
+CUSTOM_12: Mean Error = 0.007465846446559165, Std Dev = 9.801623811578834E-4
+HALF_16: Mean Error = 5.623548761609907E-6, Std Dev = 2.4536335594409423E-5
+TF32_19: Mean Error = 5.623548761609907E-6, Std Dev = 2.4536335594409423E-5
+CUSTOM_24: Mean Error = 0.0, Std Dev = 0.0
+Execution time: 7588.9524 ms
+
+STD_DEV: 0.1f, Size: 64 x 64
+
+E4M3_8: Mean Error = 1.5835332350021765, Std Dev = 0.1328699825691223
+CUSTOM_12: Mean Error = 0.03534121365036584, Std Dev = 0.001355817923533006
+HALF_16: Mean Error = 6.8735142083149E-5, Std Dev = 4.3221417552964554E-5
+TF32_19: Mean Error = 6.8735142083149E-5, Std Dev = 4.3221417552964554E-5
+CUSTOM_24: Mean Error = 0.0, Std Dev = 0.0
+Execution time: 60753.2264 ms
+
+STD_DEV: 0.01f, Size: 32 x 32
+
+E4M3_8: Mean Error = 0.1977734375, Std Dev = 0.03991990653781995
+CUSTOM_12: Mean Error = 0.0, Std Dev = 0.0
+HALF_16: Mean Error = 0.0, Std Dev = 0.0
+TF32_19: Mean Error = 0.0, Std Dev = 0.0
+CUSTOM_24: Mean Error = 0.0, Std Dev = 0.0
+Execution time: 4163.0332 ms

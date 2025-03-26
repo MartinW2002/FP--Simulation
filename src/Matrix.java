@@ -7,7 +7,7 @@ public class Matrix {
     private FPType type;
 
     public static Matrix createRandomMatrix(int rows, int cols, FPType type) {
-        return new Matrix(rows, cols, type, 0.1F);
+        return new Matrix(rows, cols, type, Main.STD_DEV);
     }
 
     // Random
@@ -183,6 +183,23 @@ public class Matrix {
             for (int j = 0; j < cols; j++) {
                 double value = difference.data[i][j].toFloat();
                 result += value * value;
+            }
+        }
+        result /= (rows * cols);
+        return result;
+    }
+
+    public static double relativeError(Matrix matrix1, Matrix matrix2) {
+        double result = 0.0;
+
+        int rows = matrix1.rows;
+        int cols = matrix1.cols;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                double difference = matrix1.get(i, j).toFloat() - matrix2.get(i, j).toFloat();
+                double avg = (matrix1.get(i, j).toFloat() + matrix2.get(i, j).toFloat()) / 2.0;
+                if (avg != 0)
+                    result += Math.abs(difference / avg);
             }
         }
         result /= (rows * cols);

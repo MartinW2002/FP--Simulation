@@ -1,40 +1,70 @@
-import javax.crypto.EncryptedPrivateKeyInfo;
-import java.util.Arrays;
-import java.util.HashMap;
-
 public class Main {
     // TODO Quantisation paper metric
     // TODO MSE, Cosine similarity, Normalise norm of difference
     // TODO Take FP32 data, quantisise to get distribution
     // TODO 32x32 and 256x256
 
+    public static float STD_DEV = 0.01F;
+    public static FPType MAIN_TYPE = FPType.E4M3_8;
+
+    public static void main2(String[] args) {
+        System.out.println(Matrix.createRandomMatrix(32,32, FPType.E4M3_8));
+    }
+
     public static void main(String[] args) {
-        int size = 32;
+        long startTime = System.nanoTime();
+
+        int size = 64;
         int nIter = 100;
-        double[] totalMSEArray = new double[FPType.values().length];
+        int numTypes = FPType.values().length;
+
+        double[] totalErrorArray = new double[numTypes];
+        double[][] errorValues = new double[numTypes][nIter]; // Stores all MSEs for std dev
 
         for (int i = 0; i < nIter; i++) {
 
-            Matrix matrix1 = Matrix.createRandomMatrix(size, size, FPType.E5M2_8);
-            Matrix matrix2 = Matrix.createRandomMatrix(size, size, FPType.E5M2_8);
+            Matrix matrix1 = Matrix.createRandomMatrix(size, size, MAIN_TYPE);
+            Matrix matrix2 = Matrix.createRandomMatrix(size, size, MAIN_TYPE);
 
             Matrix exactProduct = matrix1.times(matrix2, FPType.DOUBLE_64);
 
-            for (FPType type : FPType.values()) {
+            for (FPType type : FPType.types) {
 
                 Matrix product = matrix1.times(matrix2, type);
 
-                double mse = Matrix.MSE(exactProduct, product);
+//                double error = Matrix.MSE(exactProduct, product);
+                double error = Matrix.relativeError(exactProduct, product);
 
-                totalMSEArray[type.ordinal()] += mse;
+                totalErrorArray[type.ordinal()] += error;
+                errorValues[type.ordinal()][i] = error;
             }
         }
-        for (int i = 0; i < totalMSEArray.length; i++) {
-            totalMSEArray[i] /= nIter;
+        for (int i = 0; i < totalErrorArray.length; i++) {
+            totalErrorArray[i] /= nIter;
         }
-        for (FPType type : FPType.values()) {
-            System.out.println(type + ": " + totalMSEArray[type.ordinal()]);
+
+        // Compute standard deviation
+        double[] stdDevArray = new double[numTypes];
+        for (FPType type : FPType.types) {
+            int index = type.ordinal();
+            double mean = totalErrorArray[index];
+            double varianceSum = 0.0;
+
+            for (int i = 0; i < nIter; i++) {
+                varianceSum += Math.pow(errorValues[index][i] - mean, 2);
+            }
+
+            stdDevArray[index] = Math.sqrt(varianceSum / nIter);
         }
+
+        for (FPType type : FPType.types) {
+            System.out.println(type + ": Mean Error = " + totalErrorArray[type.ordinal()] +
+                    ", Std Dev = " + stdDevArray[type.ordinal()]);
+        }
+
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+        System.out.println("Execution time: " + duration / 1_000_000.0 + " ms");
     }
 
 }
