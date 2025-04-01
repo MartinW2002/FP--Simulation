@@ -14,7 +14,7 @@ public class Main {
     public static float STD_DEV = 1.0F;
     public static FPType MAIN_TYPE = FPType.E4M3_8;
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         int size = 10;
         Matrix matrix1 = Matrix.createRandomMatrix(size, size, MAIN_TYPE);
         Matrix matrix2 = Matrix.createRandomMatrix(size, size, MAIN_TYPE);
@@ -33,11 +33,11 @@ public class Main {
         }
     }
 
-    public static void main2(String[] args) {
+    public static void main(String[] args) {
         long startTime = System.nanoTime();
 
-        int size = 256;
-        int nIter = 1;
+        int size = 32;
+        int nIter = 10;
         int numTypes = FPType.values().length;
 
         double[] totalErrorArray = new double[numTypes];
@@ -83,6 +83,22 @@ public class Main {
             System.out.println(type + ": Mean Error = " + totalErrorArray[type.ordinal()] +
                     ", Std Dev = " + stdDevArray[type.ordinal()]);
         }
+
+        System.out.println("----------------");
+
+        StringBuilder stringBuilder1 = new StringBuilder();
+        StringBuilder stringBuilder2 = new StringBuilder();
+        for (FPType type : FPType.types) {
+            stringBuilder1.append(type.toString());
+            stringBuilder1.append(", ");
+
+            stringBuilder2.append(totalErrorArray[type.ordinal()]);
+            stringBuilder2.append(", ");
+        }
+        System.out.println(stringBuilder1);
+        System.out.println(stringBuilder2);
+
+        System.out.println("----------------");
 
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
