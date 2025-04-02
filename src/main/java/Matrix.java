@@ -1,3 +1,5 @@
+import org.apache.commons.math3.distribution.TDistribution;
+
 import java.util.Random;
 
 public class Matrix {
@@ -19,11 +21,22 @@ public class Matrix {
 
         this.data = new CustomFloat[rows][cols];
 
-        Random random = new Random();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                float randomValue = (float) (random.nextGaussian() * stdDev);
-                this.data[i][j] = new CustomFloat(randomValue, type);
+        if (Main.GAUSS) {
+            Random random = new Random();
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    float randomValue = (float) (random.nextGaussian() * stdDev);
+                    this.data[i][j] = new CustomFloat(randomValue, type);
+                }
+            }
+        } else {
+            TDistribution tDistribution = new TDistribution(Main.MU);
+
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    double tValue = tDistribution.sample();
+                    this.data[i][j] = new CustomFloat((float) tValue, type);
+                }
             }
         }
     }

@@ -13,6 +13,8 @@ public class Main {
 
     public static float STD_DEV = 1.0F;
     public static FPType MAIN_TYPE = FPType.E4M3_8;
+    public static int MU = 3;
+    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
 
     public static void main2(String[] args) {
         int size = 10;
