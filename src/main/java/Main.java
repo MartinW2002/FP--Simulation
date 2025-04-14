@@ -1,10 +1,11 @@
 public class Main {
-    // TODO Quantisation paper metric
-    // TODO MSE, Cosine similarity, Normalise norm of difference
-    // TODO Take FP32 data, quantisise to get distribution
     // TODO 32x32 and 256x256
 
     // TODO Fout minder groot maken door volgorde groot klein, plus min
+    // TODO Foutgrens zoeken in papers
+    // TODO E3M4
+    // TODO Kwantisatie fout naar fp8 gaan meten
+    // TODO int8
 
     // Grafieken voor
     // Gaus vs t distr
@@ -12,7 +13,7 @@ public class Main {
     // Vergelijken mantissa en vergelijken exponent
 
     public static float STD_DEV = 1.0F;
-    public static FPType MAIN_TYPE = FPType.E4M3_8;
+    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int MU = 3;
     public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
 
@@ -38,8 +39,8 @@ public class Main {
     public static void main(String[] args) {
         long startTime = System.nanoTime();
 
-        int size = 32;
-        int nIter = 10;
+        int size = 256;
+        int nIter = 1;
         int numTypes = FPType.values().length;
 
         double[] totalErrorArray = new double[numTypes];
@@ -91,7 +92,9 @@ public class Main {
         StringBuilder stringBuilder1 = new StringBuilder();
         StringBuilder stringBuilder2 = new StringBuilder();
         for (FPType type : FPType.types) {
+            stringBuilder1.append("'");
             stringBuilder1.append(type.toString());
+            stringBuilder1.append("'");
             stringBuilder1.append(", ");
 
             stringBuilder2.append(totalErrorArray[type.ordinal()]);
