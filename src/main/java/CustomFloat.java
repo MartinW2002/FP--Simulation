@@ -12,17 +12,17 @@ public class CustomFloat {
     private boolean[] exponent;
     private boolean[] mantissa;
 
-    public CustomFloat(float number, FPType type) {
+    public CustomFloat(float number, FPType type, Matrix matrix) {
         this.type = type;
         this.totalBits = type.getTotalBits();
         this.exponentBits = type.getExponentBits();
         this.mantissaBits = type.getMantissaBits();
-        this.bias = (1 << (exponentBits - 1)) - 1; // TODO Add bias as variable
+        this.bias = (1 << (exponentBits - 1)) - 1;
 
-        encodeFloat(number);
+        encodeFloat(number, matrix);
     }
 
-    private void encodeFloat(float number) {
+    private void encodeFloat(float number, Matrix matrix) {
         // TODO Even rounding!
         if (number == 0) {
             sign = false;
@@ -54,7 +54,10 @@ public class CustomFloat {
 
         // Handle overflow
         if (exp > ((1 << exponentBits) - 1)) {
-            System.out.print("Overflow");
+            if (matrix == null)
+                System.out.println("Overflow - number: " + number + ", E" + exponentBits + "M" + mantissaBits);
+            else
+                matrix.addOverflow();
             exponent = intToBooleanArray((1 << exponentBits) - 1, exponentBits);
             mantissa = new boolean[mantissaBits];
             Arrays.fill(mantissa, true);
@@ -128,17 +131,17 @@ public class CustomFloat {
 
     public CustomFloat plus(CustomFloat other) {
         float result = this.toFloat() + other.toFloat();
-        return new CustomFloat(result, type);
+        return new CustomFloat(result, type, null);
     }
 
     public CustomFloat minus(CustomFloat other) {
         float result = this.toFloat() - other.toFloat();
-        return new CustomFloat(result, type);
+        return new CustomFloat(result, type, null);
     }
 
     public CustomFloat times(CustomFloat other, FPType type) {
         float result = this.toFloat() * other.toFloat();
-        return new CustomFloat(result, type);
+        return new CustomFloat(result, type, null);
     }
 
     @Override

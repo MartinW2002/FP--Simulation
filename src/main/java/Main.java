@@ -2,10 +2,11 @@ public class Main {
     // TODO 32x32 and 256x256
 
     // TODO Fout minder groot maken door volgorde groot klein, plus min
-    // TODO Foutgrens zoeken in papers
     // TODO E3M4
     // TODO Kwantisatie fout naar fp8 gaan meten
     // TODO int8
+
+    // TODO Calculate percent overflow for acc.
 
     // Grafieken voor
     // Gaus vs t distr
@@ -13,9 +14,9 @@ public class Main {
     // Vergelijken mantissa en vergelijken exponent
 
     public static float STD_DEV = 1.0F;
-    public static FPType MAIN_TYPE = FPType.E3M4;
+    public static FPType MAIN_TYPE = FPType.E5M2;
     public static int MU = 3;
-    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
+    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
 
     public static void main2(String[] args) {
         int size = 10;
@@ -39,8 +40,14 @@ public class Main {
     public static void main(String[] args) {
         long startTime = System.nanoTime();
 
-        int size = 256;
+        // 100 x 32 or 1 x 256
+
+//        int size = 256;
+//        int nIter = 1;
+
+        int size = 32;
         int nIter = 1;
+
         int numTypes = FPType.values().length;
 
         double[] totalErrorArray = new double[numTypes];
@@ -52,10 +59,17 @@ public class Main {
             Matrix matrix2 = Matrix.createRandomMatrix(size, size, MAIN_TYPE);
 
             Matrix exactProduct = matrix1.times(matrix2, FPType.DOUBLE_64);
-
+            if (i == 0) {
+                int percentOverflow = (int) Math.round(100.0 * exactProduct.getNOverflows() / (exactProduct.getNCols()
+                        * exactProduct.getNRows()));
+                System.out.println("Exactproduct overflows: " + percentOverflow + "%");
+            }
             for (FPType type : FPType.types) {
 
                 Matrix product = matrix1.times(matrix2, type);
+
+//                System.out.println(type + " product number of overflows: " + product.getNOverflows() + "/"
+//                        + product.getNCols() * product.getNRows());
 
                 double error = Matrix.MSE(exactProduct, product);
 //                double error = Matrix.relativeError(exactProduct, product);
@@ -107,7 +121,7 @@ public class Main {
 
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
-        System.out.println("Execution time: " + duration / 1_000_000.0 + " ms");
+        System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
     }
 
 }

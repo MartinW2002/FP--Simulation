@@ -7,6 +7,7 @@ public class Matrix {
     private int rows;
     private int cols;
     private FPType type;
+    private int nOverflows = 0;
 
     public static Matrix createRandomMatrix(int rows, int cols, FPType type) {
         return new Matrix(rows, cols, type, Main.STD_DEV);
@@ -26,7 +27,7 @@ public class Matrix {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     float randomValue = (float) (random.nextGaussian() * stdDev);
-                    this.data[i][j] = new CustomFloat(randomValue, type);
+                    this.data[i][j] = new CustomFloat(randomValue, type, null);
                 }
             }
         } else {
@@ -35,7 +36,7 @@ public class Matrix {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     double tValue = tDistribution.sample();
-                    this.data[i][j] = new CustomFloat((float) tValue, type);
+                    this.data[i][j] = new CustomFloat((float) tValue, type, null);
                 }
             }
         }
@@ -51,7 +52,7 @@ public class Matrix {
         // Initialize the matrix with zeros
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                data[i][j] = new CustomFloat(0f, type);
+                data[i][j] = new CustomFloat(0f, type, null);
             }
         }
     }
@@ -85,7 +86,7 @@ public class Matrix {
             // Parse each element as a CustomFloat
             for (int j = 0; j < elements.length; j++) {
                 float value = Float.parseFloat(elements[j].trim());
-                this.data[i][j] = new CustomFloat(value, type);
+                this.data[i][j] = new CustomFloat(value, type, null);
             }
         }
     }
@@ -145,11 +146,11 @@ public class Matrix {
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < other.cols; j++) {
                 // TODO Check different order
-                CustomFloat sum = new CustomFloat(0f, accType);
+                CustomFloat sum = new CustomFloat(0f, accType, null);
                 for (int k = 0; k < this.cols; k++) {
                     sum = sum.plus(this.data[i][k].times(other.data[k][j], accType));
                 }
-                result.set(i, j, new CustomFloat(sum.toFloat(), this.type));
+                result.set(i, j, new CustomFloat(sum.toFloat(), this.type, result));
             }
         }
         return result;
@@ -218,5 +219,13 @@ public class Matrix {
         }
         result /= (rows * cols);
         return 1 - result;
+    }
+
+    public void addOverflow() {
+        nOverflows++;
+    }
+
+    public int getNOverflows() {
+        return nOverflows;
     }
 }

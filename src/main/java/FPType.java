@@ -30,13 +30,16 @@ public enum FPType {
 //    TF32_19(8, 10), // TensorFloat-32
 //    CUSTOM_24(8, 15),
 //    SINGLE_32(8, 23),
+    E3M32(3, 32),
     DOUBLE_64(11, 52);
+
 
     private final int exponent;
     private final int mantissa;
 
     public static final FPType[] types = {E5M3, E5M4, E5M5, E5M6, E5M7, E5M8, E5M9, E5M10, E5M12, E5M16, E5M20};
-//    public static final FPType[] types = {E4M32, E5M32, E6M32, E7M32};
+//    public static final FPType[] types = {E3M32, E4M32, E5M32, E6M32, E7M32};
+//    public static final FPType[] types = {E3M4};
 
     FPType(int exponent, int mantissa) {
         this.exponent = exponent;

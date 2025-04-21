@@ -1,0 +1,2 @@
+- E3M4 overflows 8 % of a 256 x 256 matrix, 0% of a 32 x 32 matrix
+- Overflow bij E3M32 bij t-distr
