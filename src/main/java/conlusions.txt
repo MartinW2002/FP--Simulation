@@ -1,2 +1,10 @@
 - E3M4 overflows 8 % of a 256 x 256 matrix, 0% of a 32 x 32 matrix
 - Overflow bij E3M32 bij t-distr
+
+E5M2 -> E5M6 ; 256 ; t-distr
+
+Random: 128.77765330549897
+Ascending: 159.51373349329648
+Descending: 170.7332337755841
+Ascending Abs: 12.104643916575325
+Descending Abs: 319.827437966792

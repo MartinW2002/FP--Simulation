@@ -37,7 +37,7 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main3(String[] args) {
         long startTime = System.nanoTime();
 
         // 100 x 32 or 1 x 256
@@ -124,4 +124,59 @@ public class Main {
         System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
     }
 
+    public static void main(String[] args) {
+        long startTime = System.nanoTime();
+
+        int nIter = 1000;
+        int size = 256;
+        FPType type = FPType.E5M6;
+
+        double totalErrorRandom = 0;
+        double totalErrorAscending = 0;
+        double totalErrorDescending = 0;
+        double totalErrorAscendingAbs = 0;
+        double totalErrorDescendingAbs = 0;
+
+        for (int i = 0; i < nIter; i++) {
+
+            Vector vector1 = Vector.random(size, MAIN_TYPE);
+            Vector vector2 = Vector.random(size, MAIN_TYPE);
+
+            VectorPair ascendingPair = vector1.sortWithCompanion(vector2, true, false);
+            VectorPair descendingPair = vector1.sortWithCompanion(vector2, false, false);
+            VectorPair ascendingPairAbs = vector1.sortWithCompanion(vector2, true, true);
+            VectorPair descendingPairAbs = vector1.sortWithCompanion(vector2, false, true);
+
+            CustomFloat exactResult = vector1.multiply(vector2, FPType.DOUBLE_64);
+
+            CustomFloat randomResult = vector1.multiply(vector2, type);
+            CustomFloat ascendingResult = ascendingPair.v1.multiply(ascendingPair.v2, type);
+            CustomFloat descendingResult = descendingPair.v1.multiply(descendingPair.v2, type);
+            CustomFloat ascendingResultAbs = ascendingPairAbs.v1.multiply(ascendingPairAbs.v2, type);
+            CustomFloat descendingResultAbs = descendingPairAbs.v1.multiply(descendingPairAbs.v2, type);
+
+            totalErrorRandom += Math.pow(exactResult.toFloat() - randomResult.toFloat(), 2);
+            totalErrorAscending += Math.pow(exactResult.toFloat() - ascendingResult.toFloat(), 2);
+            totalErrorDescending += Math.pow(exactResult.toFloat() - descendingResult.toFloat(), 2);
+            totalErrorAscendingAbs += Math.pow(exactResult.toFloat() - ascendingResultAbs.toFloat(), 2);
+            totalErrorDescendingAbs += Math.pow(exactResult.toFloat() - descendingResultAbs.toFloat(), 2);
+        }
+        double randomMSE = totalErrorRandom / nIter;
+        double ascendingMSE = totalErrorAscending / nIter;
+        double descendingMSE = totalErrorDescending / nIter;
+        double ascendingAbsMSE = totalErrorAscendingAbs / nIter;
+        double descendingAbsMSE = totalErrorDescendingAbs / nIter;
+
+        System.out.println("Random: " + randomMSE);
+        System.out.println("Ascending: " + ascendingMSE);
+        System.out.println("Descending: " + descendingMSE);
+        System.out.println("Ascending Abs: " + ascendingAbsMSE);
+        System.out.println("Descending Abs: " + descendingAbsMSE);
+
+        System.out.println("------------------");
+
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+        System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
+    }
 }
