@@ -10,17 +10,18 @@ public class Matrix {
     private int nOverflows = 0;
 
     public static Matrix createRandomMatrix(int rows, int cols, FPType type) {
-        return new Matrix(rows, cols, type, Main.STD_DEV);
+        return new Matrix(rows, cols, type);
     }
 
     // Random
-    // TODO Student t distribution v = 3 iso Gaussian
-    private Matrix(int rows, int cols, FPType type, float stdDev) {
+    private Matrix(int rows, int cols, FPType type) {
         this.rows = rows;
         this.cols = cols;
         this.type = type;
 
         this.data = new CustomFloat[rows][cols];
+
+        float stdDev = (float) Math.sqrt(2.0 / (float) rows);
 
         if (Main.GAUSS) {
             Random random = new Random();
@@ -31,31 +32,33 @@ public class Matrix {
                 }
             }
         } else {
-            TDistribution tDistribution = new TDistribution(Main.MU);
+            TDistribution tDistribution = new TDistribution(Main.NU);
+            double stddevT = Math.sqrt(Main.NU / (Main.NU - 2.0)); // Theoretical stddev of t-dist
 
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     double tValue = tDistribution.sample();
-                    this.data[i][j] = new CustomFloat((float) tValue, type, null);
+                    float scaledValue = (float) (tValue * (stdDev / stddevT));
+                    this.data[i][j] = new CustomFloat(scaledValue, type, null);
                 }
             }
         }
     }
 
     // Constructor to create an empty matrix with given dimensions
-    public Matrix(int rows, int cols, FPType type) {
-        this.rows = rows;
-        this.cols = cols;
-        this.type = type;
-        data = new CustomFloat[rows][cols];
-
-        // Initialize the matrix with zeros
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                data[i][j] = new CustomFloat(0f, type, null);
-            }
-        }
-    }
+//    public Matrix(int rows, int cols, FPType type) {
+//        this.rows = rows;
+//        this.cols = cols;
+//        this.type = type;
+//        data = new CustomFloat[rows][cols];
+//
+//        // Initialize the matrix with zeros
+//        for (int i = 0; i < rows; i++) {
+//            for (int j = 0; j < cols; j++) {
+//                data[i][j] = new CustomFloat(0f, type, null);
+//            }
+//        }
+//    }
 
     // Constructor to create a matrix with predefined data
     public Matrix(CustomFloat[][] data) {

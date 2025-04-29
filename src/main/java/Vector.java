@@ -1,7 +1,6 @@
 import org.apache.commons.math3.distribution.TDistribution;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
 public class Vector {
@@ -14,21 +13,24 @@ public class Vector {
     }
 
     public static Vector random(int size, FPType type) {
-        Random rand = new Random();
         CustomFloat[] arr = new CustomFloat[size];
+
+        float stdDev = (float) Math.sqrt(2.0 / (float) size);
 
         if (Main.GAUSS) {
             Random random = new Random();
             for (int i = 0; i < size; i++) {
-                float randomValue = (float) (random.nextGaussian() * Main.STD_DEV);
+                float randomValue = (float) (random.nextGaussian() * stdDev);
                 arr[i] = new CustomFloat(randomValue, type, null);
             }
         } else {
-            TDistribution tDistribution = new TDistribution(Main.MU);
+            TDistribution tDistribution = new TDistribution(Main.NU);
+            double stddevT = Math.sqrt(Main.NU / (Main.NU - 2.0)); // Theoretical stddev of t-dist
 
             for (int i = 0; i < size; i++) {
                 double tValue = tDistribution.sample();
-                arr[i] = new CustomFloat((float) tValue, type, null);
+                float scaledValue = (float) (tValue * (stdDev / stddevT));
+                arr[i] = new CustomFloat(scaledValue, type, null);
             }
         }
         return new Vector(arr, type);
