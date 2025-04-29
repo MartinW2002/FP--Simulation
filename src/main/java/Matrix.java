@@ -45,6 +45,20 @@ public class Matrix {
         }
     }
 
+    // Generates a matrix with a different FPType based on the values in an old matrix
+    public Matrix(Matrix old, FPType type) {
+        this.rows = old.rows;
+        this.cols = old.cols;
+        this.type = type;
+        this.data = new CustomFloat[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                this.data[i][j] = new CustomFloat(old.data[i][j].toFloat(), type, null);
+            }
+        }
+    }
+
     // Constructor to create an empty matrix with given dimensions
 //    public Matrix(int rows, int cols, FPType type) {
 //        this.rows = rows;

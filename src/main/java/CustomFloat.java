@@ -34,7 +34,7 @@ public class CustomFloat {
         sign = number < 0;
         number = Math.abs(number);
 
-        int exp = (int) (Math.log(number) / Math.log(2));
+        int exp = (int) Math.floor(Math.log(number) / Math.log(2));
         float fraction = (number / ((float) Math.pow(2, exp))) - 1;
         exp += bias;
 
@@ -169,12 +169,14 @@ public class CustomFloat {
             sb.append("1");
         else
             sb.append("0");
+        sb.append(".");
         for (boolean b : exponent) {
             if (b)
                 sb.append("1");
             else
                 sb.append("0");
         }
+        sb.append(".");
         for (boolean b : mantissa) {
             if (b)
                 sb.append("1");

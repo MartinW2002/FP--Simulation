@@ -16,7 +16,7 @@ public class Main {
     // E5M2, E4M3, E3M4
     // Vergelijken mantissa en vergelijken exponent
 
-    public static FPType MAIN_TYPE = FPType.E5M6;
+    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
     public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
 
@@ -26,8 +26,30 @@ public class Main {
         main_kwantisatie();
     }
 
-    public static void main_kwantisatie() {
 
+    public static void main_kwantisatie() {
+        int size = 32;
+        int nIter = 1;
+
+        FPType testType = FPType.DOUBLE_64;
+        FPType comparisonType = FPType.E3M4;
+
+        double totalMSE = 0;
+        for (int i = 0; i < nIter; i++) {
+            Matrix comparisonMatrix = Matrix.createRandomMatrix(size, size, comparisonType);
+            Matrix testMatrix = new Matrix(comparisonMatrix, testType);
+
+            for (int j = 0; j < 4; j++) {
+                System.out.println(comparisonMatrix.get(j, j));
+                System.out.println(testMatrix.get(j, j));
+                System.out.println("");
+            }
+
+
+            double mse = Matrix.MSE(comparisonMatrix, testMatrix);
+            totalMSE += mse;
+        }
+        System.out.println(totalMSE / (float) nIter);
     }
 
     public static void main_accuracy() {
@@ -35,11 +57,11 @@ public class Main {
 
         // 100 x 32 or 1 x 256
 
-        int size = 256;
-        int nIter = 1;
+//        int size = 256;
+//        int nIter = 1;
 
-//        int size = 32;
-//        int nIter = 100;
+        int size = 32;
+        int nIter = 100;
 
         int numTypes = FPType.values().length;
 
@@ -53,7 +75,6 @@ public class Main {
             Matrix matrix2 = Matrix.createRandomMatrix(size, size, MAIN_TYPE);
 
             Matrix exactProduct = matrix1.times(matrix2, FPType.DOUBLE_64);
-            System.out.println(exactProduct);
             if (i == 0) {
                 int percentOverflow = (int) Math.round(100.0 * exactProduct.getNOverflows() / (exactProduct.getNCols()
                         * exactProduct.getNRows()));
