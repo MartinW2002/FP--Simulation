@@ -16,35 +16,28 @@ public class Main {
     // E5M2, E4M3, E3M4
     // Vergelijken mantissa en vergelijken exponent
 
-    public static FPType MAIN_TYPE = FPType.E3M4;
+    public static FPType MAIN_TYPE = FPType.E4M3;
     public static int NU = 3;
-    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
+    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
 
     public static void main(String[] args) {
 //        main_accuracy();
-//        main_order();
-        main_kwantisatie();
+        main_order();
+//        main_kwantisatie();
     }
 
 
     public static void main_kwantisatie() {
         int size = 32;
-        int nIter = 1;
+        int nIter = 1000;
 
-        FPType testType = FPType.DOUBLE_64;
-        FPType comparisonType = FPType.E3M4;
+        FPType testType = MAIN_TYPE;
+        FPType comparisonType = FPType.SINGLE_32;
 
         double totalMSE = 0;
         for (int i = 0; i < nIter; i++) {
             Matrix comparisonMatrix = Matrix.createRandomMatrix(size, size, comparisonType);
             Matrix testMatrix = new Matrix(comparisonMatrix, testType);
-
-            for (int j = 0; j < 4; j++) {
-                System.out.println(comparisonMatrix.get(j, j));
-                System.out.println(testMatrix.get(j, j));
-                System.out.println("");
-            }
-
 
             double mse = Matrix.MSE(comparisonMatrix, testMatrix);
             totalMSE += mse;
@@ -54,6 +47,8 @@ public class Main {
 
     public static void main_accuracy() {
         long startTime = System.nanoTime();
+
+        System.out.println(MAIN_TYPE + " - " + GAUSS);
 
         // 100 x 32 or 1 x 256
 

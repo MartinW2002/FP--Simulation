@@ -21,7 +21,7 @@ public class Matrix {
 
         this.data = new CustomFloat[rows][cols];
 
-        float stdDev = (float) Math.sqrt(2.0 / (float) rows);
+        float stdDev = (float) Math.sqrt(1.0 / (float) rows);
 
         if (Main.GAUSS) {
             Random random = new Random();
