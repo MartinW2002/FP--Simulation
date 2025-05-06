@@ -15,7 +15,7 @@ public class Vector {
     public static Vector random(int size, FPType type) {
         CustomFloat[] arr = new CustomFloat[size];
 
-        float stdDev = (float) Math.sqrt(1.0 / (float) size);
+        float stdDev = 1.0f / (float) Math.pow(size, 0.25);
 
         if (Main.GAUSS) {
             Random random = new Random();

@@ -38,14 +38,6 @@ public class CustomFloat {
         float fraction = (number / ((float) Math.pow(2, exp))) - 1;
         exp += bias;
 
-        // Handle underflow
-//        if (exp <= 0) {
-//            sign = false;
-//            exponent = new boolean[exponentBits];
-//            mantissa = new boolean[mantissaBits];
-//            return;
-//        }
-
         // Handle denormalized numbers (exp < 1)
         if (exp <= 0) {
             exp = 0; // Set exponent to zero for denormals
@@ -77,16 +69,47 @@ public class CustomFloat {
     }
 
     private boolean[] fractionToBooleanArray(float fraction, int size) {
-        boolean[] bits = new boolean[size];
-        for (int i = 0; i < size; i++) {
+        boolean[] bits = new boolean[size + 1]; // +1 for the rounding bit
+
+        for (int i = 0; i <= size; i++) {
             fraction *= 2;
             if (fraction >= 1) {
                 bits[i] = true;
                 fraction -= 1;
             }
         }
-        return bits;
+
+        // Round based on the extra bit (round bit)
+        boolean roundBit = bits[size];
+        boolean[] result = Arrays.copyOf(bits, size);
+
+        if (roundBit) {
+            // Round up: add 1 to result
+            for (int i = size - 1; i >= 0; i--) {
+                if (!result[i]) {
+                    result[i] = true;
+                    break;
+                } else {
+                    result[i] = false;
+                }
+            }
+        }
+
+        return result;
     }
+
+//    private boolean[] fractionToBooleanArray(float fraction, int size) {
+//        boolean[] bits = new boolean[size];
+//        for (int i = 0; i < size; i++) {
+//            fraction *= 2;
+//            if (fraction >= 1) {
+//                bits[i] = true;
+//                fraction -= 1;
+//            }
+//        }
+//        return bits;
+//    }
+
 
     public float toFloat() {
         int exp = booleanArrayToInt(exponent);

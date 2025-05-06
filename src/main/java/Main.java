@@ -12,7 +12,7 @@ public class Main {
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
     public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
-    public static boolean SIZE_32 = false; // 32 or 64
+    public static boolean SIZE_32 = true; // 32 or 64
     public static boolean MANTISSA = false; // True: mantissa testing, False: Exponent testing
 
     public static FPType[] MAIN_TYPES = {FPType.E3M4, FPType.E4M3, FPType.E5M2};
