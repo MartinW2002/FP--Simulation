@@ -1,5 +1,7 @@
 import org.apache.commons.math3.distribution.TDistribution;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Matrix {
@@ -21,8 +23,8 @@ public class Matrix {
 
         this.data = new CustomFloat[rows][cols];
 
-        float stdDev = (float) Math.sqrt(1.0 / (float) rows);
-
+        float stdDev = 1.0f / (float) Math.pow(rows, 0.25);
+//        float stdDev = 1.0f;
         if (Main.GAUSS) {
             Random random = new Random();
             for (int i = 0; i < rows; i++) {
@@ -245,4 +247,30 @@ public class Matrix {
     public int getNOverflows() {
         return nOverflows;
     }
+
+    public float calculateStandardDeviation() {
+        List<Float> values = new ArrayList<>();
+
+        for (CustomFloat[] row : data) {
+            for (CustomFloat val : row) {
+                values.add(val.toFloat());
+            }
+        }
+
+        // Calculate mean
+        float sum = 0f;
+        for (float v : values) sum += v;
+        float mean = sum / values.size();
+
+        // Calculate variance
+        float variance = 0f;
+        for (float v : values) {
+            variance += (v - mean) * (v - mean);
+        }
+        variance /= values.size();
+
+        // Standard deviation
+        return (float) Math.sqrt(variance);
+    }
+
 }
