@@ -22,6 +22,19 @@ public class CustomFloat {
         encodeFloat(number, matrix);
     }
 
+    public CustomFloat(boolean sign, int exponent, int mantissa, FPType type) {
+        this.type = type;
+        this.totalBits = type.getTotalBits();
+        this.exponentBits = type.getExponentBits();
+        this.mantissaBits = type.getMantissaBits();
+        this.bias = (1 << (exponentBits - 1)) - 1;
+
+        this.sign = sign;
+        this.exponent = intToBooleanArray(exponent, exponentBits);
+        this.mantissa = intToBooleanArray(mantissa, mantissaBits);
+
+    }
+
     private void encodeFloat(float number, Matrix matrix) {
         // TODO Even rounding!
         if (number == 0) {

@@ -13,6 +13,6 @@ public class TestCustomFloat {
         assertEquals(1.750F, new CustomFloat(1.750f, type, null).toFloat());
 
         // Denormals
-        assertEquals(0.0078125F, new CustomFloat(0.0078125F, type, null).toString());
+        assertEquals(0.0078125F, new CustomFloat(0.0078125F, type, null).toFloat());
     }
 }

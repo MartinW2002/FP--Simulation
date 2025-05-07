@@ -164,7 +164,6 @@ public class Matrix {
         Matrix result = new Matrix(this.rows, other.cols, this.type);
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < other.cols; j++) {
-                // TODO Check different order
                 CustomFloat sum = new CustomFloat(0f, accType, null);
                 for (int k = 0; k < this.cols; k++) {
                     sum = sum.plus(this.data[i][k].times(other.data[k][j], accType));

@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Main {
     // TODO 32x32 and 256x256
 
@@ -18,6 +20,7 @@ public class Main {
     public static FPType[] MAIN_TYPES = {FPType.E3M4, FPType.E4M3, FPType.E5M2};
 
     public static void main(String[] args) {
+//        main_test();
         main_accuracy();
 //        main_order();
 //        main_kwantisatie();
@@ -28,8 +31,10 @@ public class Main {
         int size = 32;
         int nIter = 10000;
 
-//        int size = 256;
-//        int nIter = 1000;
+        if (!SIZE_32) {
+            size = 256;
+            nIter = 1000;
+        }
         for (FPType testType : MAIN_TYPES) {
             FPType comparisonType = FPType.SINGLE_32;
 
@@ -94,12 +99,10 @@ public class Main {
                 for (FPType type : types) {
 
                     Matrix product = matrix1.times(matrix2, type);
-
 //                System.out.println(type + " product number of overflows: " + product.getNOverflows() + "/"
 //                        + product.getNCols() * product.getNRows());
 
                     double error = Matrix.MSE(exactProduct, product);
-//                double error = Matrix.relativeError(exactProduct, product);
 
                     totalErrorArray[type.ordinal()] += error;
                     errorValues[type.ordinal()][i] = error;
@@ -207,5 +210,23 @@ public class Main {
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
         System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
+    }
+
+    public static void main_test() {
+        FPType[] typesToTest = {FPType.E2M4, FPType.E3M4};
+        for (FPType type : typesToTest) {
+            System.out.println(type);
+            System.out.println(Arrays.toString(type.allPossible()));
+            System.out.println("---------------");
+        }
+    }
+
+    public static void printMatrix(Matrix matrix, int n) {
+        System.out.print("{");
+        for (int i = 0; i < n; i++) {
+            System.out.print(matrix.get(0, i));
+            System.out.print(",");
+        }
+        System.out.println("}");
     }
 }

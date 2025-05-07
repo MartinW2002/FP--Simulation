@@ -17,11 +17,12 @@ public enum FPType {
     E5M13(5, 13),
     E5M14(5, 14),
     E5M15(5, 15),
+    E5M16(5, 16),
+    E5M20(5, 20),
 
     E4M10(4, 10),
     E6M10(6, 10),
     E7M10(7, 10),
-    E5M16(5, 16),
     E4M16(4, 16),
     E6M16(6, 16),
     E7M16(7, 16),
@@ -29,7 +30,6 @@ public enum FPType {
     E4M32(4, 32),
     E6M32(6, 32),
     E7M32(7, 32),
-    E5M20(5, 20),
     //    CUSTOM_12(5, 6),
 //    HALF_16(5, 10),
 //    BFLOAT_16(8,7), // Brain Floating Point
@@ -42,17 +42,39 @@ public enum FPType {
     SINGLE_32(8, 23),
     E3M32(3, 32),
     DOUBLE_64(11, 52),
-    E3M8(3, 8);
+    E3M8(3, 8),
+    E3M5(3, 5),
+    E3M6(3, 6),
+    E4M4(4, 4),
+    E4M5(4, 5),
+    E4M6(4, 6),
+    E6M4(6, 4),
+    E3M2(3, 2),
+    E3M7(3, 7),
+    E2M4(2, 4),
+    E2M5(2, 5),
+    E2M6(2, 6),
+    E2M7(2, 7),
+    E2M8(2, 8),
+    E2M9(2, 9),
+    E2M32(2, 32);
 
 
     private final int exponent;
     private final int mantissa;
 
 
-    public static final FPType[] MANTISSA_TYPES = {E5M3, E5M4, E5M5, E5M6, E5M7, E5M8, E5M9, E5M10, E5M11, E5M12, E5M13, E5M14};
-    public static final FPType[] EXPONENT_TYPES = {E3M32, E4M32, E5M32, E6M32, E7M32};
+//    public static final FPType[] MANTISSA_TYPES = {E5M3, E5M4, E5M5, E5M6, E5M7, E5M8, E5M9, E5M10, E5M11, E5M12, E5M13, E5M14};
+//    public static final FPType[] MANTISSA_TYPES = {E3M2, E3M4, E3M5, E3M6, E3M7, E3M8};
+    public static final FPType[] MANTISSA_TYPES = {E2M4, E2M5, E2M6, E2M7, E2M8, E2M9};
 
-    //    public static final FPType[] types = {E3M12, E4M12, E5M12, E6M12, E7M12};
+    public static final FPType[] EXPONENT_TYPES = {E2M32, E3M32, E4M32, E5M32, E6M32, E7M32};
+//    public static final FPType[] EXPONENT_TYPES = {E3M12, E4M12, E5M12, E6M12, E7M12};
+
+    public static final FPType[] FP8 = {E3M4, E4M3, E5M2};
+    public static final FPType[] FP9 = {E3M5, E4M4, E5M3};
+    public static final FPType[] FP10 = {E3M6, E4M5, E5M4};
+    public static final FPType[] FP11 = {E3M7, E4M6, E5M5};
 
     FPType(int exponent, int mantissa) {
         this.exponent = exponent;
@@ -69,5 +91,18 @@ public enum FPType {
 
     public int getMantissaBits() {
         return mantissa;
+    }
+
+    public CustomFloat[] allPossible() {
+        int maxExponent = (int) Math.pow(2, exponent);
+        int maxMantissa = (int) Math.pow(2, mantissa);
+        CustomFloat[] floats = new CustomFloat[maxExponent*maxMantissa];
+        for (int i = 0; i < maxExponent; i++) {
+            for (int j = 0; j < maxMantissa; j++) {
+                CustomFloat customFloat = new CustomFloat(false, i, j, this);
+                floats[i * maxMantissa + j] = customFloat;
+            }
+        }
+        return floats;
     }
 }
