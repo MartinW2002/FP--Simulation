@@ -11,19 +11,27 @@ public class Matrix {
     private FPType type;
     private int nOverflows = 0;
 
-    public static Matrix createRandomMatrix(int rows, int cols, FPType type) {
-        return new Matrix(rows, cols, type);
+    public Matrix(boolean b, int rows, int cols, FPType type) {
+        this.rows = rows;
+        this.cols = cols;
+        this.type = type;
+
+        this.data = new CustomFloat[rows][cols];
+    }
+
+    public static Matrix createRandomMatrix(int rows, int cols, FPType type, float stdDev) {
+        return new Matrix(rows, cols, type, stdDev);
     }
 
     // Random
-    private Matrix(int rows, int cols, FPType type) {
+    private Matrix(int rows, int cols, FPType type, float stdDev) {
         this.rows = rows;
         this.cols = cols;
         this.type = type;
 
         this.data = new CustomFloat[rows][cols];
 
-        float stdDev = 1.0f / (float) Math.pow(rows, 0.25);
+//        float stdDev = 1.0f / (float) Math.pow(rows, 0.25);
 //        float stdDev = 1.0f;
         if (Main.GAUSS) {
             Random random = new Random();
@@ -129,7 +137,7 @@ public class Matrix {
             throw new IllegalArgumentException("Matrix dimensions must match for addition");
         }
 
-        Matrix result = new Matrix(this.rows, this.cols, this.type);
+        Matrix result = new Matrix(false, this.rows, this.cols, this.type);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 CustomFloat sum = this.data[i][j].plus(other.data[i][j]);
@@ -145,7 +153,7 @@ public class Matrix {
             throw new IllegalArgumentException("Matrix dimensions must match for subtraction");
         }
 
-        Matrix result = new Matrix(this.rows, this.cols, this.type);
+        Matrix result = new Matrix(true, this.rows, this.cols, this.type);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 CustomFloat sum = this.data[i][j].minus(other.data[i][j]);
@@ -161,7 +169,7 @@ public class Matrix {
             throw new IllegalArgumentException("Matrix dimensions must match for multiplication");
         }
 
-        Matrix result = new Matrix(this.rows, other.cols, this.type);
+        Matrix result = new Matrix(false, this.rows, other.cols, this.type);
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < other.cols; j++) {
                 CustomFloat sum = new CustomFloat(0f, accType, null);

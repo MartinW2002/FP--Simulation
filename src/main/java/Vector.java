@@ -15,7 +15,7 @@ public class Vector {
     public static Vector random(int size, FPType type) {
         CustomFloat[] arr = new CustomFloat[size];
 
-        float stdDev = 1.0f / (float) Math.pow(size, 0.25);
+        float stdDev = 1.0f / (float) Math.pow(size, 0.5);
 
         if (Main.GAUSS) {
             Random random = new Random();
@@ -43,7 +43,27 @@ public class Vector {
         CustomFloat result = new CustomFloat(0F, accumulator, null);
 
         for (int i = 0; i < data.length; i++) {
-            result = result.plus(this.data[i].times(other.data[i], accumulator));
+            if (accumulator == FPType.DOUBLE_64) {
+                Main.stringBuilders[2 * i] = new StringBuilder();
+                Main.stringBuilders[2 * i + 1] = new StringBuilder();
+                Main.stringBuilders[2 * i].append(this.data[i]).append(" * ").append(other.data[i]).append(" = ");
+            }
+            Main.stringBuilders[2 * i + 1].append(result).append(" -> ");
+
+
+            CustomFloat toAdd = this.data[i].times(other.data[i], accumulator);
+//            CustomFloat toAdd = this.data[i].times(other.data[i], FPType.DOUBLE_64);
+            result = result.plus(toAdd);
+
+            Main.stringBuilders[2 * i + 1].append(result).append(" | ");
+            Main.stringBuilders[2 * i].append(toAdd).append(" | ");
+
+            if (accumulator == FPType.DOUBLE_64)
+                Main.resultsArray[3 * i] = result.toFloat();
+            if (accumulator == FPType.E2M4)
+                Main.resultsArray[3 * i + 1] = result.toFloat();
+            if (accumulator == FPType.E3M4)
+                Main.resultsArray[3 * i + 2] = result.toFloat();
         }
 
         return result;
@@ -97,5 +117,30 @@ public class Vector {
             this.value = value;
         }
     }
+
+    public static Vector fromString(String input, FPType type) {
+        input = input.trim();
+        if (input.startsWith("[") && input.endsWith("]")) {
+            input = input.substring(1, input.length() - 1); // remove brackets
+        }
+
+        String[] entries = input.split("\\),\\s*"); // split on "), "
+        CustomFloat[] data = new CustomFloat[entries.length];
+
+        for (int i = 0; i < entries.length; i++) {
+            String entry = entries[i].trim();
+            if (!entry.endsWith(")")) {
+                entry = entry + ")"; // Add back the closing parenthesis if removed by split
+            }
+
+            int valueEnd = entry.indexOf(" (");
+            float value = Float.parseFloat(entry.substring(0, valueEnd).trim());
+
+            data[i] = new CustomFloat(value, type, null);
+        }
+
+        return new Vector(data, type);
+    }
+
 
 }

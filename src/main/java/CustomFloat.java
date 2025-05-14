@@ -12,11 +12,19 @@ public class CustomFloat {
     private boolean[] exponent;
     private boolean[] mantissa;
 
+    private boolean roundExpUp;
+
     public CustomFloat(float number, FPType type, Matrix matrix) {
         this.type = type;
         this.totalBits = type.getTotalBits();
         this.exponentBits = type.getExponentBits();
         this.mantissaBits = type.getMantissaBits();
+//        if (type == FPType.E3M4)
+//            this.bias = (1 << (exponentBits - 1)) - 3;
+//        else if (type == FPType.E4M4)
+//            this.bias = (1 << (exponentBits - 1)) - 8;
+//        else
+//            this.bias = (1 << (exponentBits - 1)) - 1;
         this.bias = (1 << (exponentBits - 1)) - 1;
 
         encodeFloat(number, matrix);
@@ -35,7 +43,9 @@ public class CustomFloat {
 
     }
 
-    private void encodeFloat(float number, Matrix matrix) {
+    public void encodeFloat(float number, Matrix matrix) {
+        roundExpUp = false;
+
         // TODO Even rounding!
         if (number == 0) {
             sign = false;
@@ -57,6 +67,10 @@ public class CustomFloat {
             fraction = number / ((float) Math.pow(2, 1 - bias)); // Scale fraction
         }
 
+        mantissa = fractionToBooleanArray(fraction, mantissaBits);
+        if (roundExpUp)
+            exp += 1;
+
         // Handle overflow
         if (exp > ((1 << exponentBits) - 1)) {
             if (matrix == null)
@@ -70,7 +84,6 @@ public class CustomFloat {
         }
 
         exponent = intToBooleanArray(exp, exponentBits);
-        mantissa = fractionToBooleanArray(fraction, mantissaBits);
     }
 
     public static boolean[] intToBooleanArray(int value, int size) {
@@ -98,6 +111,13 @@ public class CustomFloat {
 
         if (roundBit) {
             // Round up: add 1 to result
+            roundExpUp = true;
+            for (boolean b : result) {
+                if (!b) {
+                    roundExpUp = false;
+                    break;
+                }
+            }
             for (int i = size - 1; i >= 0; i--) {
                 if (!result[i]) {
                     result[i] = true;
@@ -135,7 +155,7 @@ public class CustomFloat {
         // Denormals
         if (exp == 0) {
             fraction = 0.0f;
-            exp = (exp - bias) + 1;
+            exp = 1 - bias;
         } else {
             exp -= bias;
         }
@@ -184,6 +204,8 @@ public class CustomFloat {
     public String toString() {
 //        return String.format("Sign: %b, Exponent: %s, Mantissa: %s (%.3f)",
 //                sign, Arrays.toString(exponent), Arrays.toString(mantissa), toFloat());
+        if (type == FPType.DOUBLE_64)
+            return String.valueOf(toFloat());
         return toFloat() + " (" + getBitRepresentation() + ")";
     }
 

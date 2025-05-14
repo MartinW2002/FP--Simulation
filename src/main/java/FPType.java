@@ -51,13 +51,35 @@ public enum FPType {
     E6M4(6, 4),
     E3M2(3, 2),
     E3M7(3, 7),
+    E3M9(3, 9),
+    E3M10(3, 10),
+    E3M11(3, 11),
+    E3M13(3, 13),
+    E3M14(3, 14),
     E2M4(2, 4),
     E2M5(2, 5),
     E2M6(2, 6),
     E2M7(2, 7),
     E2M8(2, 8),
     E2M9(2, 9),
-    E2M32(2, 32);
+    E2M32(2, 32),
+    E1M5(1, 5),
+    E1M12(1, 12),
+    E3M3(3, 3),
+    E15M5(15, 5),
+
+    E2M10(2, 10),
+    E2M11(2, 12),
+    E2M12(2, 12),
+    E2M13(2, 13),
+    E2M14(2, 14),
+
+    E4M7(4, 7),
+    E4M8(4, 8),
+    E4M9(4, 9),
+    E4M11(4, 11),
+    E4M13(4, 13),
+    E4M14(4, 14);
 
 
     private final int exponent;
@@ -65,16 +87,12 @@ public enum FPType {
 
 
 //    public static final FPType[] MANTISSA_TYPES = {E5M3, E5M4, E5M5, E5M6, E5M7, E5M8, E5M9, E5M10, E5M11, E5M12, E5M13, E5M14};
-//    public static final FPType[] MANTISSA_TYPES = {E3M2, E3M4, E3M5, E3M6, E3M7, E3M8};
-    public static final FPType[] MANTISSA_TYPES = {E2M4, E2M5, E2M6, E2M7, E2M8, E2M9};
+    public static final FPType[] MANTISSA_TYPES = {E4M4, E4M5, E4M6, E4M7, E4M8, E4M9, E4M10, E4M11, E4M12, E4M13, E4M14};
+//    public static final FPType[] MANTISSA_TYPES = {E3M4, E3M5, E3M6, E3M7, E3M8, E3M9, E3M10, E3M11, E3M12, E3M13, E3M14};
+//    public static final FPType[] MANTISSA_TYPES = {E2M4, E2M5, E2M6, E2M7, E2M8, E2M9, E2M10, E2M11, E2M12, E2M13, E2M14};
 
-    public static final FPType[] EXPONENT_TYPES = {E2M32, E3M32, E4M32, E5M32, E6M32, E7M32};
-//    public static final FPType[] EXPONENT_TYPES = {E3M12, E4M12, E5M12, E6M12, E7M12};
-
-    public static final FPType[] FP8 = {E3M4, E4M3, E5M2};
-    public static final FPType[] FP9 = {E3M5, E4M4, E5M3};
-    public static final FPType[] FP10 = {E3M6, E4M5, E5M4};
-    public static final FPType[] FP11 = {E3M7, E4M6, E5M5};
+//    public static final FPType[] EXPONENT_TYPES = {E2M32, E3M32, E4M32, E5M32};
+    public static final FPType[] EXPONENT_TYPES = {E2M12, E3M12, E4M12, E5M12, E6M12, E7M12};
 
     FPType(int exponent, int mantissa) {
         this.exponent = exponent;
