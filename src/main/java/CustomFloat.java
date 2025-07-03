@@ -107,6 +107,12 @@ public class CustomFloat {
 
         // Round based on the extra bit (round bit)
         boolean roundBit = bits[size];
+        if (type == FPType.E4M10) {
+            if (roundBit)
+                Main.roundUp += 1;
+            else
+                Main.roundDown += 1;
+        }
         boolean[] result = Arrays.copyOf(bits, size);
 
         if (roundBit) {

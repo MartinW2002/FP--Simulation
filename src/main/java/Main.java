@@ -9,17 +9,18 @@ public class Main {
 
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
-    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
-    public static boolean SIZE_32 = false; // 32 or 256
-    public static boolean MANTISSA = false; // True: mantissa testing, False: Exponent testing
+    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
+    public static boolean SIZE_32 = true; // 32 or 256
+    public static boolean MANTISSA = true; // True: mantissa testing, False: Exponent testing
 
-    public static FPType[] MAIN_TYPES = {FPType.E3M4, FPType.E4M3, FPType.E5M2};
+    public static FPType[] MAIN_TYPES = {FPType.E3M4};
+//    public static FPType[] MAIN_TYPES = {FPType.E3M4, FPType.E4M3, FPType.E5M2};
 
     public static void main(String[] args) {
-//        main_test();
-//        main_accuracy();
-        main_order();
+        main_accuracy();
 //        main_kwantisatie();
+
+//        main_order();
 //        test4();
 //        test9();
 
@@ -30,45 +31,61 @@ public class Main {
 
     public static void main_kwantisatie() {
         int size = 32;
-        int nIter = 10000;
+        int nIter = 8000;
 
         if (!SIZE_32) {
             size = 256;
-            nIter = 100;
+            nIter = 1000;
         }
+        System.out.println(size + " x " + size);
+        System.out.println(nIter + " iterations");
+        System.out.println((GAUSS ? "Gaussian" : "T-distribution"));
+
         for (FPType testType : MAIN_TYPES) {
             FPType comparisonType = FPType.SINGLE_32;
 
-            double totalMSE = 0;
+            double totalMSE1 = 0;
+            double totalMSE2 = 0;
             for (int i = 0; i < nIter; i++) {
-                Matrix comparisonMatrix = Matrix.createRandomMatrix(size, size, comparisonType, 1.0f / (float) Math.sqrt(size)); // TODO Welke Std Dev
-                Matrix testMatrix = new Matrix(comparisonMatrix, testType);
+                Matrix comparisonMatrix1 = Matrix.createRandomMatrix(size, size, comparisonType, 1.0f / (float) Math.sqrt(size));
+                Matrix comparisonMatrix2 = Matrix.createRandomMatrix(size, size, comparisonType, 1);
 
-                double mse = Matrix.MSE(comparisonMatrix, testMatrix);
-                totalMSE += mse;
+                Matrix testMatrix1 = new Matrix(comparisonMatrix1, testType);
+                Matrix testMatrix2 = new Matrix(comparisonMatrix2, testType);
+
+                double mse1 = Matrix.MSE(comparisonMatrix1, testMatrix1);
+                double mse2 = Matrix.MSE(comparisonMatrix2, testMatrix2);
+                totalMSE1 += mse1;
+                totalMSE2 += mse2;
             }
             System.out.println(testType);
-            System.out.println(totalMSE / (float) nIter);
+
+            System.out.println("STD: 1/sqrt(N) - 1");
+            System.out.println((totalMSE1 / (float) nIter) + " - " + (totalMSE2 / (float) nIter));
 
             System.out.println("-----");
         }
     }
 
+    public static double roundUp = 0;
+    public static double roundDown = 0;
+
     public static void main_accuracy() {
         long startTime = System.nanoTime();
 
-        // 100 x 32 or 1 x 256
+        // 360 x 32 or 45 x 256
 
         int size = 256;
-        int nIter = 1;
+        int nIter = 45;
         if (SIZE_32) {
-            size = 32;
-            nIter = 100;
+            size = 1024;
+//            nIter = 360;
+            nIter = 1;
         }
 
-        FPType[] types = MANTISSA ? FPType.MANTISSA_TYPES : FPType.EXPONENT_TYPES;
+//        FPType[] types = MANTISSA ? FPType.MANTISSA_TYPES : FPType.EXPONENT_TYPES;
 
-//        FPType[] types = {FPType.E2M4, FPType.E3M4};
+        FPType[] types = {FPType.E2M11};
 
         System.out.println(size + " x " + size);
         System.out.println(nIter + " iterations");
@@ -110,6 +127,7 @@ public class Main {
                     totalErrorArray[type.ordinal()] += error;
                     errorValues[type.ordinal()][i] = error;
                 }
+                System.out.println((i + 1) + "/" + nIter);
             }
             for (int i = 0; i < totalErrorArray.length; i++) {
                 totalErrorArray[i] /= nIter;
@@ -152,6 +170,78 @@ public class Main {
 
             System.out.println("----------------");
         }
+
+        System.out.println("Rounded up " + (roundUp * 100 / (roundDown + roundUp)) + " % of the time.");
+
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+        System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
+    }
+
+    public static void main_accuracy2() {
+        long startTime = System.nanoTime();
+
+        // 120 x 32 or 15 x 256
+
+        int size = 256;
+        int nIter = 45;
+        if (SIZE_32) {
+            size = 32;
+            nIter = 360;
+        }
+
+        FPType[] types = MANTISSA ? FPType.MANTISSA_TYPES : FPType.EXPONENT_TYPES;
+
+//        FPType[] types = {FPType.E2M4, FPType.E3M4};
+
+        System.out.println(size + " x " + size);
+        System.out.println(nIter + " iterations");
+        System.out.println("Testing " + (MANTISSA ? "mantissa" : "exponent"));
+        System.out.println("-------------");
+
+        for (FPType mainType : MAIN_TYPES) {
+
+            System.out.println(mainType + " - " + (GAUSS ? "Gaussian" : "T-distribution"));
+
+            int numTypes = FPType.values().length;
+
+            double[] totalErrorArray = new double[numTypes];
+
+            for (int i = 0; i < nIter; i++) {
+
+                Matrix matrix1 = Matrix.createRandomMatrix(size, size, mainType, 1.0f / (float) Math.sqrt(size));
+                Matrix matrix2 = Matrix.createRandomMatrix(size, size, mainType, 1);
+
+                Matrix exactProduct = matrix1.times(matrix2, FPType.DOUBLE_64);
+                for (FPType type : types) {
+
+                    Matrix product = matrix1.times(matrix2, type);
+                    double error = Matrix.MSE(exactProduct, product);
+
+                    totalErrorArray[type.ordinal()] += error;
+                }
+                System.out.println((i + 1) + "/" + nIter);
+            }
+            for (int i = 0; i < totalErrorArray.length; i++) {
+                totalErrorArray[i] /= nIter;
+            }
+
+            StringBuilder stringBuilder1 = new StringBuilder();
+            StringBuilder stringBuilder2 = new StringBuilder();
+            for (FPType type : types) {
+                stringBuilder1.append("'");
+                stringBuilder1.append(type.toString());
+                stringBuilder1.append("'");
+                stringBuilder1.append(", ");
+
+                stringBuilder2.append(totalErrorArray[type.ordinal()]);
+                stringBuilder2.append(", ");
+            }
+            System.out.println(stringBuilder1);
+            System.out.println(stringBuilder2);
+
+            System.out.println("----------------");
+        }
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
         System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
@@ -160,11 +250,11 @@ public class Main {
     public static void main_order() {
         long startTime = System.nanoTime();
 
-        int nIter = 200;
-        int size = 100;
+        int nIter = 100;
+        int size = 200;
 
-        FPType mainType = FPType.E4M3;
-        FPType accType = FPType.E2M5;
+        FPType mainType = FPType.E3M4;
+        FPType accType = FPType.E3M5;
 
         double totalErrorRandom = 0;
         double totalErrorAscending = 0;
@@ -263,7 +353,7 @@ public class Main {
         System.out.println("E3M4: " + error2);
     }
 
-    public static final int TEST2_N = 100;
+    public static final int TEST2_N = 200;
 
     public static StringBuilder[] stringBuilders = new StringBuilder[TEST2_N * 2];
     public static float[] resultsArray = new float[TEST2_N * 3];

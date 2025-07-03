@@ -87,9 +87,9 @@ public enum FPType {
 
 
 //    public static final FPType[] MANTISSA_TYPES = {E5M3, E5M4, E5M5, E5M6, E5M7, E5M8, E5M9, E5M10, E5M11, E5M12, E5M13, E5M14};
-    public static final FPType[] MANTISSA_TYPES = {E4M4, E4M5, E4M6, E4M7, E4M8, E4M9, E4M10, E4M11, E4M12, E4M13, E4M14};
+//    public static final FPType[] MANTISSA_TYPES = {E4M4, E4M5, E4M6, E4M7, E4M8, E4M9, E4M10, E4M11, E4M12, E4M13, E4M14};
 //    public static final FPType[] MANTISSA_TYPES = {E3M4, E3M5, E3M6, E3M7, E3M8, E3M9, E3M10, E3M11, E3M12, E3M13, E3M14};
-//    public static final FPType[] MANTISSA_TYPES = {E2M4, E2M5, E2M6, E2M7, E2M8, E2M9, E2M10, E2M11, E2M12, E2M13, E2M14};
+    public static final FPType[] MANTISSA_TYPES = {E2M4, E2M5, E2M6, E2M7, E2M8, E2M9, E2M10, E2M11, E2M12, E2M13, E2M14};
 
 //    public static final FPType[] EXPONENT_TYPES = {E2M32, E3M32, E4M32, E5M32};
     public static final FPType[] EXPONENT_TYPES = {E2M12, E3M12, E4M12, E5M12, E6M12, E7M12};
