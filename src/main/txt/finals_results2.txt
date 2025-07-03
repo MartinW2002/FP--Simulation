@@ -132,13 +132,4 @@ E5M2 - Gaussian - E2M11
 1024
 4096 deepseek check
 
-std dev zetten dat 5*sigma = breedte fp8
-sqrt N van bias af
-
-16 x 32 x 256
-
-enkel positieve getallen
-
-figuren met distributie
-meer bespreken
 
