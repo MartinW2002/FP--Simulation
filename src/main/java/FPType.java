@@ -111,16 +111,16 @@ public enum FPType {
         return mantissa;
     }
 
-    public CustomFloat[] allPossible() {
-        int maxExponent = (int) Math.pow(2, exponent);
-        int maxMantissa = (int) Math.pow(2, mantissa);
-        CustomFloat[] floats = new CustomFloat[maxExponent*maxMantissa];
-        for (int i = 0; i < maxExponent; i++) {
-            for (int j = 0; j < maxMantissa; j++) {
-                CustomFloat customFloat = new CustomFloat(false, i, j, this);
-                floats[i * maxMantissa + j] = customFloat;
-            }
-        }
-        return floats;
-    }
+//    public CustomFloat[] allPossible() {
+//        int maxExponent = (int) Math.pow(2, exponent);
+//        int maxMantissa = (int) Math.pow(2, mantissa);
+//        CustomFloat[] floats = new CustomFloat[maxExponent*maxMantissa];
+//        for (int i = 0; i < maxExponent; i++) {
+//            for (int j = 0; j < maxMantissa; j++) {
+//                CustomFloat customFloat = new CustomFloat(false, i, j, this);
+//                floats[i * maxMantissa + j] = customFloat;
+//            }
+//        }
+//        return floats;
+//    }
 }

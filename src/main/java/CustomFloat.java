@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 public class CustomFloat {
-    private final FPType type;
+    private final FloatType type;
 
     private final int totalBits;
     private final int exponentBits;
@@ -14,7 +14,7 @@ public class CustomFloat {
 
     private boolean roundExpUp;
 
-    public CustomFloat(float number, FPType type, Matrix matrix) {
+    public CustomFloat(float number, FloatType type, Matrix matrix) {
         this.type = type;
         this.totalBits = type.getTotalBits();
         this.exponentBits = type.getExponentBits();
@@ -24,7 +24,7 @@ public class CustomFloat {
         encodeFloat(number, matrix);
     }
 
-    public CustomFloat(boolean sign, int exponent, int mantissa, FPType type) {
+    public CustomFloat(boolean sign, int exponent, int mantissa, FloatType type) {
         this.type = type;
         this.totalBits = type.getTotalBits();
         this.exponentBits = type.getExponentBits();
@@ -101,12 +101,6 @@ public class CustomFloat {
 
         // Round based on the extra bit (round bit)
         boolean roundBit = bits[size];
-        if (type == FPType.E4M10) {
-            if (roundBit)
-                Main.roundUp += 1;
-            else
-                Main.roundDown += 1;
-        }
         boolean[] result = Arrays.copyOf(bits, size);
 
         if (roundBit) {
@@ -195,7 +189,7 @@ public class CustomFloat {
         return new CustomFloat(result, type, null);
     }
 
-    public CustomFloat times(CustomFloat other, FPType type) {
+    public CustomFloat times(CustomFloat other, FloatType type) {
         float result = this.toFloat() * other.toFloat();
         return new CustomFloat(result, type, null);
     }
@@ -204,12 +198,12 @@ public class CustomFloat {
     public String toString() {
 //        return String.format("Sign: %b, Exponent: %s, Mantissa: %s (%.3f)",
 //                sign, Arrays.toString(exponent), Arrays.toString(mantissa), toFloat());
-        if (type == FPType.DOUBLE_64)
+        if (totalBits == 64)
             return String.valueOf(toFloat());
         return toFloat() + " (" + getBitRepresentation() + ")";
     }
 
-    public FPType getType() {
+    public FloatType getType() {
         return type;
     }
 

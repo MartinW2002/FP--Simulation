@@ -1,5 +1,6 @@
 import org.apache.commons.math3.distribution.TDistribution;
 
+import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,26 +9,29 @@ public class Matrix {
     private CustomFloat[][] data;
     private int rows;
     private int cols;
-    private FPType type;
+    private FloatType type;
     private int nOverflows = 0;
+    private float dividor;
 
-    public Matrix(boolean b, int rows, int cols, FPType type) {
+    public Matrix(boolean b, int rows, int cols, FloatType type) {
         this.rows = rows;
         this.cols = cols;
         this.type = type;
 
         this.data = new CustomFloat[rows][cols];
+        this.dividor = (float) (type.getStdDev() * Math.sqrt(getNRows()));
     }
 
-    public static Matrix createRandomMatrix(int rows, int cols, FPType type, float stdDev) {
-        return new Matrix(rows, cols, type, stdDev);
+    public static Matrix createRandomMatrix(int rows, int cols, FloatType type) {
+        return new Matrix(rows, cols, type, type.getStdDev());
     }
 
     // Random
-    private Matrix(int rows, int cols, FPType type, float stdDev) {
+    private Matrix(int rows, int cols, FloatType type, float stdDev) {
         this.rows = rows;
         this.cols = cols;
         this.type = type;
+        this.dividor = (float) (type.getStdDev() * Math.sqrt(getNRows()));
 
         this.data = new CustomFloat[rows][cols];
 
@@ -56,11 +60,12 @@ public class Matrix {
     }
 
     // Generates a matrix with a different FPType based on the values in an old matrix
-    public Matrix(Matrix old, FPType type) {
+    public Matrix(Matrix old, FloatType type) {
         this.rows = old.rows;
         this.cols = old.cols;
         this.type = type;
         this.data = new CustomFloat[rows][cols];
+        this.dividor = (float) (type.getStdDev() * Math.sqrt(getNRows()));
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -164,7 +169,7 @@ public class Matrix {
     }
 
     // Multiply this matrix by another matrix
-    public Matrix times(Matrix other, FPType accType) {
+    public Matrix times(Matrix other, FloatType accType) {
         if (this.cols != other.rows) {
             throw new IllegalArgumentException("Matrix dimensions must match for multiplication");
         }
@@ -176,7 +181,7 @@ public class Matrix {
                 for (int k = 0; k < this.cols; k++) {
                     sum = sum.plus(this.data[i][k].times(other.data[k][j], accType));
                 }
-                result.set(i, j, new CustomFloat(sum.toFloat(), this.type, result));
+                result.set(i, j, new CustomFloat((sum.toFloat() / dividor), this.type, result));
             }
         }
         return result;

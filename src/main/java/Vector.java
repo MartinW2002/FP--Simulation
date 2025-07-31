@@ -5,14 +5,14 @@ import java.util.Random;
 
 public class Vector {
     private final CustomFloat[] data;
-    private final FPType type;
+    private final FloatType type;
 
-    public Vector(CustomFloat[] data, FPType type) {
+    public Vector(CustomFloat[] data, FloatType type) {
         this.data = data;
         this.type = type;
     }
 
-    public static Vector random(int size, FPType type) {
+    public static Vector random(int size, FloatType type) {
         CustomFloat[] arr = new CustomFloat[size];
 
         float stdDev = 1.0f / (float) Math.pow(size, 0.5);
@@ -36,14 +36,14 @@ public class Vector {
         return new Vector(arr, type);
     }
 
-    public CustomFloat multiply(Vector other, FPType accumulator) {
+    public CustomFloat multiply(Vector other, FloatType accumulator) {
         if (this.data.length != other.data.length) {
             throw new IllegalArgumentException("Vectors must be the same length");
         }
         CustomFloat result = new CustomFloat(0F, accumulator, null);
 
         for (int i = 0; i < data.length; i++) {
-            if (accumulator == FPType.DOUBLE_64) {
+            if (accumulator.equals(FloatType.DOUBLE_64)) {
                 Main.stringBuilders[2 * i] = new StringBuilder();
                 Main.stringBuilders[2 * i + 1] = new StringBuilder();
                 Main.stringBuilders[2 * i].append(this.data[i]).append(" * ").append(other.data[i]).append(" = ");
@@ -58,12 +58,13 @@ public class Vector {
             Main.stringBuilders[2 * i + 1].append(result).append(" | ");
             Main.stringBuilders[2 * i].append(toAdd).append(" | ");
 
-            if (accumulator == FPType.DOUBLE_64)
-                Main.resultsArray[3 * i] = result.toFloat();
-            if (accumulator == FPType.E2M4)
-                Main.resultsArray[3 * i + 1] = result.toFloat();
-            if (accumulator == FPType.E3M4)
-                Main.resultsArray[3 * i + 2] = result.toFloat();
+            // TODO Fix
+//            if (accumulator == FPType.DOUBLE_64)
+//                Main.resultsArray[3 * i] = result.toFloat();
+//            if (accumulator == FPType.E2M4)
+//                Main.resultsArray[3 * i + 1] = result.toFloat();
+//            if (accumulator == FPType.E3M4)
+//                Main.resultsArray[3 * i + 2] = result.toFloat();
         }
 
         return result;
@@ -118,7 +119,7 @@ public class Vector {
         }
     }
 
-    public static Vector fromString(String input, FPType type) {
+    public static Vector fromString(String input, FloatType type) {
         input = input.trim();
         if (input.startsWith("[") && input.endsWith("]")) {
             input = input.substring(1, input.length() - 1); // remove brackets

@@ -7,7 +7,7 @@ public class VectorPair {
         this.v2 = v2;
     }
 
-    public VectorPair random(int size, FPType type) {
+    public VectorPair random(int size, FloatType type) {
         return new VectorPair(Vector.random(size, type), Vector.random(size, type));
     }
 
