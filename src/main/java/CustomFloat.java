@@ -19,12 +19,6 @@ public class CustomFloat {
         this.totalBits = type.getTotalBits();
         this.exponentBits = type.getExponentBits();
         this.mantissaBits = type.getMantissaBits();
-//        if (type == FPType.E3M4)
-//            this.bias = (1 << (exponentBits - 1)) - 3;
-//        else if (type == FPType.E4M4)
-//            this.bias = (1 << (exponentBits - 1)) - 8;
-//        else
-//            this.bias = (1 << (exponentBits - 1)) - 1;
         this.bias = (1 << (exponentBits - 1)) - 1;
 
         encodeFloat(number, matrix);

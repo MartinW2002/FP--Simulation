@@ -1,3 +1,7 @@
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Main {
@@ -11,12 +15,23 @@ public class Main {
     public static int NU = 3;
     public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
     public static boolean SIZE_32 = true; // 32 or 256
-    public static boolean MANTISSA = true; // True: mantissa testing, False: Exponent testing
+    public static boolean MANTISSA = false; // True: mantissa testing, False: Exponent testing
 
     public static FPType[] MAIN_TYPES = {FPType.E3M4};
 //    public static FPType[] MAIN_TYPES = {FPType.E3M4, FPType.E4M3, FPType.E5M2};
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+        // Build a timestamp like 2025-07-26_18-41-12
+        String timestamp = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+
+        // Create a filename with the timestamp
+        String filename = "output_" + timestamp + ".txt";
+
+        // Redirect System.out to that file
+        PrintStream fileOut = new PrintStream(filename);
+        System.setOut(fileOut);
+
         main_accuracy();
 //        main_kwantisatie();
 
@@ -26,6 +41,8 @@ public class Main {
 
 //        test2();
 //        test_mult();
+
+        fileOut.close();
     }
 
 

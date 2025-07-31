@@ -9,8 +9,5 @@
         <module name="FP-Simulation" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="FP-Simulation" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
