@@ -4,6 +4,9 @@ public final class FloatType {
 
     public static final FloatType SINGLE_32 = new FloatType(8, 23);
     public static final FloatType DOUBLE_64 = new FloatType(11, 52);
+    public static final FloatType E3M4 = new FloatType(3, 4);
+    public static final FloatType E4M3 = new FloatType(4, 3);
+    public static final FloatType E5M2 = new FloatType(5, 2);
 
     private final int exponentBits;
     private final int mantissaBits;
@@ -35,7 +38,8 @@ public final class FloatType {
         if (exponentBits == 5 && mantissaBits == 2)
             return 16384f; // 2^14
 
-        throw new RuntimeException("invalid type: E" + exponentBits + "M" + mantissaBits);
+        return -1f;
+//        throw new RuntimeException("invalid type: E" + exponentBits + "M" + mantissaBits);
     }
 
     @Override

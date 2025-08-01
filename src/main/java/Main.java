@@ -13,13 +13,13 @@ public class Main {
 
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
-    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
+    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
     public static boolean SIZE_32 = true; // 32 or 256 // TODO Obsolete
     public static int N = 16; // 16, 64, 256 or 1024 - Must be even power of 2
     public static boolean MANTISSA = false; // True: mantissa testing, False: Exponent testing
 
-    public static FloatType[] MAIN_TYPES = {new FloatType(3, 4)};
-//    public static FloatType[] MAIN_TYPES = {FPType.E3M4, FPType.E4M3, FPType.E5M2};
+//    public static FloatType[] MAIN_TYPES = {FloatType.E3M4};
+    public static FloatType[] MAIN_TYPES = {FloatType.E3M4, FloatType.E4M3, FloatType.E5M2};
 
     public static void main(String[] args) throws FileNotFoundException {
         // Build a timestamp like 2025-07-26_18-41-12
@@ -31,10 +31,10 @@ public class Main {
 
         // Redirect System.out to that file
         PrintStream fileOut = new PrintStream(filename);
-//        System.setOut(fileOut);
+        System.setOut(fileOut);
 
-        main_accuracy();
-//        main_kwantisatie();
+//        main_accuracy();
+        main_kwantisatie();
 
 //        main_order();
 //        test4();
@@ -47,40 +47,29 @@ public class Main {
     }
 
 
-    // TODO Fix
     public static void main_kwantisatie() {
-        int size = 32;
-        int nIter = 8000;
+        System.out.println((GAUSS ? "Gaussian" : "T-distribution"));
+        int size = 16;
+        int nIter = 256000 / size;
 
-        if (!SIZE_32) {
-            size = 256;
-            nIter = 1000;
-        }
         System.out.println(size + " x " + size);
         System.out.println(nIter + " iterations");
-        System.out.println((GAUSS ? "Gaussian" : "T-distribution"));
 
         for (FloatType testType : MAIN_TYPES) {
             FloatType comparisonType = FloatType.SINGLE_32;
 
-            double totalMSE1 = 0;
-            double totalMSE2 = 0;
+            double totalMSE = 0;
             for (int i = 0; i < nIter; i++) {
-                Matrix comparisonMatrix1 = Matrix.createRandomMatrix(size, size, comparisonType);
-                Matrix comparisonMatrix2 = Matrix.createRandomMatrix(size, size, comparisonType);
+                Matrix comparisonMatrix = Matrix.createRandomMatrix(size, size, comparisonType, testType.getStdDev());
 
-                Matrix testMatrix1 = new Matrix(comparisonMatrix1, testType);
-                Matrix testMatrix2 = new Matrix(comparisonMatrix2, testType);
+                Matrix testMatrix = new Matrix(comparisonMatrix, testType);
 
-                double mse1 = Matrix.MSE(comparisonMatrix1, testMatrix1);
-                double mse2 = Matrix.MSE(comparisonMatrix2, testMatrix2);
-                totalMSE1 += mse1;
-                totalMSE2 += mse2;
+                double mse = Matrix.MSE(comparisonMatrix, testMatrix);
+                totalMSE += mse;
             }
             System.out.println(testType);
 
-            System.out.println("STD: 1/sqrt(N) - 1");
-            System.out.println((totalMSE1 / (float) nIter) + " - " + (totalMSE2 / (float) nIter));
+            System.out.println((totalMSE / (float) nIter));
 
             System.out.println("-----");
         }
@@ -90,18 +79,17 @@ public class Main {
         long startTime = System.nanoTime();
 
         int size = N;
-        int nIter = 1024 / N * 1024 / N;
+        int nIter = 1024 / N * 1024 / N / 64;
 
         System.out.println(size + " x " + size);
         System.out.println(nIter + " iterations");
-        System.out.println("Testing " + (MANTISSA ? "mantissa" : "exponent"));
+//        System.out.println("Testing " + (MANTISSA ? "mantissa" : "exponent"));
         System.out.println("-------------");
 
-        int eBegin = 4;
-        int eEnd = 5;
+        int eBegin = 3;
+        int eEnd = 7;
         int mBegin = 3;
-        int mEnd = 5;
-
+        int mEnd = 10;
 
 //        FloatType[] types = new FloatType[(eEnd - eBegin + 1) * (mEnd - mBegin + 1)];
         List<FloatType> types = new ArrayList<>();
@@ -116,10 +104,10 @@ public class Main {
 
             System.out.println(mainType + " - " + (GAUSS ? "Gaussian" : "T-distribution"));
 
-            int numTypes = FPType.values().length;
+            int numTypes = (eEnd + 1) * 32;
 
-            double[] totalErrorArray = new double[(eEnd + 1) * 32]; // e * 32 + m
-            double[][] errorValues = new double[(eEnd + 1) * 32][nIter]; // Stores all MSEs for std dev
+            double[] totalErrorArray = new double[numTypes]; // e * 32 + m
+            double[][] errorValues = new double[numTypes][nIter]; // Stores all MSEs for std dev
 
             for (int i = 0; i < nIter; i++) {
 
@@ -169,6 +157,24 @@ public class Main {
             for (FloatType type : types) {
                 System.out.println(type + ": Mean Error = " + totalErrorArray[type.ordinal()] +
                         ", Std Dev = " + stdDevArray[type.ordinal()]);
+            }
+
+            System.out.println("----------------");
+
+            System.out.print("e\\m\t");
+            for (int m = mBegin; m <= mEnd; m++) {
+                System.out.print(m + "\t");
+            }
+            System.out.println();
+
+            for (int e = eBegin; e <= eEnd; e++) {
+                System.out.print(e + "\t");
+                for (int m = mBegin; m <= mEnd; m++) {
+                    FloatType type = new FloatType(e, m);
+                    double value = totalErrorArray[type.ordinal()];
+                    System.out.printf("%.6f\t", value);
+                }
+                System.out.println();
             }
 
             System.out.println("----------------");

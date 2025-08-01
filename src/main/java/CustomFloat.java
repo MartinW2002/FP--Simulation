@@ -67,10 +67,11 @@ public class CustomFloat {
 
         // Handle overflow
         if (exp > ((1 << exponentBits) - 1)) {
-            if (matrix == null)
-                System.out.println("Overflow - number: " + number + ", E" + exponentBits + "M" + mantissaBits);
-            else
+            if (matrix == null) {
+//                System.out.println("Overflow - number: " + number + ", E" + exponentBits + "M" + mantissaBits);
+            } else {
                 matrix.addOverflow();
+            }
             exponent = intToBooleanArray((1 << exponentBits) - 1, exponentBits);
             mantissa = new boolean[mantissaBits];
             Arrays.fill(mantissa, true);
@@ -211,7 +212,7 @@ public class CustomFloat {
         return totalBits;
     }
 
-    public int getExponentBits(){
+    public int getExponentBits() {
         return exponentBits;
     }
 

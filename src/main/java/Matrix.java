@@ -13,6 +13,7 @@ public class Matrix {
     private int nOverflows = 0;
     private float dividor;
 
+    // Create empty matrix
     public Matrix(boolean b, int rows, int cols, FloatType type) {
         this.rows = rows;
         this.cols = cols;
@@ -26,12 +27,16 @@ public class Matrix {
         return new Matrix(rows, cols, type, type.getStdDev());
     }
 
+    public static Matrix createRandomMatrix(int rows, int cols, FloatType type, float stdDev) {
+        return new Matrix(rows, cols, type, stdDev);
+    }
+
     // Random
     private Matrix(int rows, int cols, FloatType type, float stdDev) {
         this.rows = rows;
         this.cols = cols;
         this.type = type;
-        this.dividor = (float) (type.getStdDev() * Math.sqrt(getNRows()));
+        this.dividor = (float) (stdDev * Math.sqrt(getNRows()));
 
         this.data = new CustomFloat[rows][cols];
 
@@ -181,6 +186,8 @@ public class Matrix {
                 for (int k = 0; k < this.cols; k++) {
                     sum = sum.plus(this.data[i][k].times(other.data[k][j], accType));
                 }
+                if (dividor < 0)
+                    throw new RuntimeException("Invalid dividor");
                 result.set(i, j, new CustomFloat((sum.toFloat() / dividor), this.type, result));
             }
         }
