@@ -1,0 +1,35 @@
+(Open SSH Certificates Client)
+
+
+
+Build > Build Artifacts > Build
+
+InteliJ Terminal: 
+cd .\out\artifacts\FP_Simulation_jar\
+pscp .\FP-Simulation.jar r1002510@ssh.esat.kuleuven.be:/users/students/r1002510/Documents/
+
+
+
+Use Putty connect to ssh.esat.kuleuven.be
+ - Username r1002510
+
+scp FP-Simulation.jar r1002510@vierre64.esat.kuleuven.be:/users/students/r1002510/Documents/
+
+
+
+ssh r1002510@vierre64.esat.kuleuven.be
+- Password: QWer1234
+
+screen -r
+
+java -jar FP-Simulation.jar
+
+java -jar FP-Simulation_G_256.jar &
+java -jar FP-Simulation_T_256.jar &
+
+CTRL+A  -  D
+
+
+-- Download --
+
+scp -o ProxyJump=r1002510@ssh.esat.kuleuven.be r1002510@vierre64.esat.kuleuven.be:/users/students/r1002510/Documents/output* Downloads

@@ -13,10 +13,8 @@ public class Main {
 
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
-    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
-    public static boolean SIZE_32 = true; // 32 or 256 // TODO Obsolete
-    public static int N = 16; // 16, 64, 256 or 1024 - Must be even power of 2
-    public static boolean MANTISSA = false; // True: mantissa testing, False: Exponent testing
+    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
+    public static int N = 1024; // 16, 64, 256 or 1024 - Must be even power of 2
 
 //    public static FloatType[] MAIN_TYPES = {FloatType.E3M4};
     public static FloatType[] MAIN_TYPES = {FloatType.E3M4, FloatType.E4M3, FloatType.E5M2};
@@ -24,24 +22,19 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         // Build a timestamp like 2025-07-26_18-41-12
         String timestamp = LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+                .format(DateTimeFormatter.ofPattern("dd-MM_HH-mm"));
 
         // Create a filename with the timestamp
         String filename = "output_" + timestamp + ".txt";
 
         // Redirect System.out to that file
         PrintStream fileOut = new PrintStream(filename);
-        System.setOut(fileOut);
+//        System.setOut(fileOut);
 
 //        main_accuracy();
-        main_kwantisatie();
-
+//        main_kwantisatie();
+        test();
 //        main_order();
-//        test4();
-//        test9();
-
-//        test2();
-//        test_mult();
 
         fileOut.close();
     }
@@ -79,30 +72,32 @@ public class Main {
         long startTime = System.nanoTime();
 
         int size = N;
-        int nIter = 1024 / N * 1024 / N / 64;
+        int nIter = 1024 / N * 16;
+//        int nIter = 2;
 
         System.out.println(size + " x " + size);
         System.out.println(nIter + " iterations");
 //        System.out.println("Testing " + (MANTISSA ? "mantissa" : "exponent"));
         System.out.println("-------------");
 
-        int eBegin = 3;
-        int eEnd = 7;
-        int mBegin = 3;
-        int mEnd = 10;
-
-//        FloatType[] types = new FloatType[(eEnd - eBegin + 1) * (mEnd - mBegin + 1)];
-        List<FloatType> types = new ArrayList<>();
-        for (int e = eBegin; e <= eEnd; e++) {
-            for (int m = mBegin; m <= mEnd; m++) {
-                types.add(new FloatType(e, m));
-            }
-        }
-
         // Loop through the three main types
         for (FloatType mainType : MAIN_TYPES) {
 
             System.out.println(mainType + " - " + (GAUSS ? "Gaussian" : "T-distribution"));
+
+            float kwantFout = getKwantisatieFout(mainType);
+
+            int eBegin = mainType.getExponentBits() + 1;
+            int eEnd = eBegin + 2;
+            int mBegin = 9;
+            int mEnd = 13;
+
+            List<FloatType> types = new ArrayList<>();
+            for (int e = eBegin; e <= eEnd; e++) {
+                for (int m = mBegin; m <= mEnd; m++) {
+                    types.add(new FloatType(e, m));
+                }
+            }
 
             int numTypes = (eEnd + 1) * 32;
 
@@ -132,12 +127,13 @@ public class Main {
                     double error = Matrix.MSE(exactProduct, product);
 
                     totalErrorArray[type.ordinal()] += error;
-                    errorValues[type.ordinal()][i] = error;
+                    errorValues[type.ordinal()][i] = error / kwantFout;
                 }
                 System.out.println((i + 1) + "/" + nIter);
             }
             for (int i = 0; i < totalErrorArray.length; i++) {
                 totalErrorArray[i] /= nIter;
+                totalErrorArray[i] /= kwantFout;
             }
 
             // Compute standard deviation
@@ -158,12 +154,12 @@ public class Main {
                 System.out.println(type + ": Mean Error = " + totalErrorArray[type.ordinal()] +
                         ", Std Dev = " + stdDevArray[type.ordinal()]);
             }
-
+            System.out.println(mainType + " - " + (GAUSS ? "Gaussian" : "T-distribution") + " - " + kwantFout);
             System.out.println("----------------");
 
-            System.out.print("e\\m\t");
+            System.out.print("e\\m\t\t");
             for (int m = mBegin; m <= mEnd; m++) {
-                System.out.print(m + "\t");
+                System.out.print(m + "\t\t");
             }
             System.out.println();
 
@@ -352,4 +348,49 @@ public class Main {
     public static StringBuilder[] stringBuilders = new StringBuilder[TEST2_N * 2];
     public static float[] resultsArray = new float[TEST2_N * 3];
 
+    public static float getKwantisatieFout(FloatType type) {
+        if (GAUSS) {
+            if (type.equals(FloatType.E3M4)) {
+                return 0.002827f;
+            } else if (type.equals(FloatType.E4M3)) {
+                return 2.8929f;
+            } else if (type.equals(FloatType.E5M2)) {
+                return 749675.75f;
+            } else {
+                throw new RuntimeException("Invalid type: " + type);
+            }
+        } else {
+            if (type.equals(FloatType.E3M4)) {
+                return 0.9526267f;
+            } else if (type.equals(FloatType.E4M3)) {
+                return 197.465f;
+            } else if (type.equals(FloatType.E5M2)) {
+                return 13562782f;
+            } else {
+                throw new RuntimeException("Invalid type: " + type);
+            }
+        }
+    }
+
+    public static void test() {
+        Matrix matrix = Matrix.createRandomMatrix(10,10, FloatType.E5M2);
+        double total = 0;
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                total += matrix.get(i, j).toFloat();
+            }
+        }
+        total /= 100.0;
+
+        double squaredDiffSum = 0;
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                squaredDiffSum += Math.pow(matrix.get(i, j).toFloat() - total, 2);
+            }
+        }
+        double stdDev = Math.sqrt(squaredDiffSum / 100.0);
+        System.out.println(stdDev);
+
+    }
 }
