@@ -14,10 +14,11 @@ public class Main {
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
     public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
-    public static int N = 1024; // 16, 64, 256 or 1024 - Must be even power of 2
+    public static int N = 64; // 16, 64, 256 or 1024 - Must be even power of 2
 
 //    public static FloatType[] MAIN_TYPES = {FloatType.E3M4};
-    public static FloatType[] MAIN_TYPES = {FloatType.E3M4, FloatType.E4M3, FloatType.E5M2};
+//    public static FloatType[] MAIN_TYPES = {FloatType.E3M4, FloatType.E4M3, FloatType.E5M2};
+    public static FloatType[] MAIN_TYPES = {FloatType.E8M3, FloatType.E6M3, FloatType.E4M3};
 
     public static void main(String[] args) throws FileNotFoundException {
         // Build a timestamp like 2025-07-26_18-41-12
@@ -29,11 +30,11 @@ public class Main {
 
         // Redirect System.out to that file
         PrintStream fileOut = new PrintStream(filename);
-//        System.setOut(fileOut);
+        System.setOut(fileOut);
 
-//        main_accuracy();
+        main_accuracy();
 //        main_kwantisatie();
-        test();
+//        test();
 //        main_order();
 
         fileOut.close();
@@ -85,12 +86,25 @@ public class Main {
 
             System.out.println(mainType + " - " + (GAUSS ? "Gaussian" : "T-distribution"));
 
-            float kwantFout = getKwantisatieFout(mainType);
+            double kwantFout = getKwantisatieFout(mainType);
 
-            int eBegin = mainType.getExponentBits() + 1;
-            int eEnd = eBegin + 2;
-            int mBegin = 9;
-            int mEnd = 13;
+            // 1024
+//            int eBegin = mainType.getExponentBits() + 1;
+//            int eEnd = eBegin + 2;
+//            int mBegin = 9;
+//            int mEnd = 13;
+
+            // Normal
+//            int eBegin = mainType.getExponentBits();
+//            int eEnd = eBegin + 2;
+//            int mBegin = 5;
+//            int mEnd = 10;
+
+            // Steff
+            int eBegin = 8;
+            int eEnd = 8;
+            int mBegin = 5;
+            int mEnd = 10;
 
             List<FloatType> types = new ArrayList<>();
             for (int e = eBegin; e <= eEnd; e++) {
@@ -348,7 +362,7 @@ public class Main {
     public static StringBuilder[] stringBuilders = new StringBuilder[TEST2_N * 2];
     public static float[] resultsArray = new float[TEST2_N * 3];
 
-    public static float getKwantisatieFout(FloatType type) {
+    public static double getKwantisatieFout(FloatType type) {
         if (GAUSS) {
             if (type.equals(FloatType.E3M4)) {
                 return 0.002827f;
@@ -356,6 +370,10 @@ public class Main {
                 return 2.8929f;
             } else if (type.equals(FloatType.E5M2)) {
                 return 749675.75f;
+            } else if (type.equals(FloatType.E8M3)) {
+                return 1.2764053084209045E72;
+            } else if (type.equals(FloatType.E6M3)) {
+                return 8.119280536755954E14;
             } else {
                 throw new RuntimeException("Invalid type: " + type);
             }
