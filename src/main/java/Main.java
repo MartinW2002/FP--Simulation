@@ -13,15 +13,15 @@ public class Main {
 
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
-    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
-    public static int N = 64; // 16, 64, 256 or 1024 - Must be even power of 2
+    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
+    public static int N = 256; // 16, 64, 256 or 1024 - Must be even power of 2
 
 //    public static FloatType[] MAIN_TYPES = {FloatType.E3M4};
-//    public static FloatType[] MAIN_TYPES = {FloatType.E3M4, FloatType.E4M3, FloatType.E5M2};
-    public static FloatType[] MAIN_TYPES = {FloatType.E8M3, FloatType.E6M3, FloatType.E4M3};
+    public static FloatType[] MAIN_TYPES = {FloatType.E3M4, FloatType.E4M3, FloatType.E5M2};
+//    public static FloatType[] MAIN_TYPES = {FloatType.E6M3, FloatType.E4M3};
 
     public static void main(String[] args) throws FileNotFoundException {
-        // Build a timestamp like 2025-07-26_18-41-12
+        // Build a timestamp like 2025-07-26_18-41
         String timestamp = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("dd-MM_HH-mm"));
 
@@ -34,7 +34,6 @@ public class Main {
 
         main_accuracy();
 //        main_kwantisatie();
-//        test();
 //        main_order();
 
         fileOut.close();
@@ -89,22 +88,28 @@ public class Main {
             double kwantFout = getKwantisatieFout(mainType);
 
             // 1024
-//            int eBegin = mainType.getExponentBits() + 1;
-//            int eEnd = eBegin + 2;
-//            int mBegin = 9;
-//            int mEnd = 13;
+            int eBegin = mainType.getExponentBits() + 1;
+            int eEnd = eBegin + 2;
+            int mBegin = 9;
+            int mEnd = 13;
 
-            // Normal
+            // 16 - 64
 //            int eBegin = mainType.getExponentBits();
 //            int eEnd = eBegin + 2;
 //            int mBegin = 5;
 //            int mEnd = 10;
 
+            // 256
+//            int eBegin = mainType.getExponentBits() + 1;
+//            int eEnd = eBegin + 2;
+//            int mBegin = 7;
+//            int mEnd = 12;
+
             // Steff
-            int eBegin = 8;
-            int eEnd = 8;
-            int mBegin = 5;
-            int mEnd = 10;
+//            int eBegin = 8;
+//            int eEnd = 8;
+//            int mBegin = 5;
+//            int mEnd = 10;
 
             List<FloatType> types = new ArrayList<>();
             for (int e = eBegin; e <= eEnd; e++) {
@@ -363,31 +368,31 @@ public class Main {
     public static float[] resultsArray = new float[TEST2_N * 3];
 
     public static double getKwantisatieFout(FloatType type) {
-        if (GAUSS) {
-            if (type.equals(FloatType.E3M4)) {
-                return 0.002827f;
-            } else if (type.equals(FloatType.E4M3)) {
-                return 2.8929f;
-            } else if (type.equals(FloatType.E5M2)) {
-                return 749675.75f;
-            } else if (type.equals(FloatType.E8M3)) {
-                return 1.2764053084209045E72;
-            } else if (type.equals(FloatType.E6M3)) {
-                return 8.119280536755954E14;
-            } else {
-                throw new RuntimeException("Invalid type: " + type);
-            }
+//        if (GAUSS) {
+        if (type.equals(FloatType.E3M4)) {
+            return 0.002827f;
+        } else if (type.equals(FloatType.E4M3)) {
+            return 2.8929f;
+        } else if (type.equals(FloatType.E5M2)) {
+            return 749675.75f;
+        } else if (type.equals(FloatType.E8M3)) {
+            return 1.2764053084209045E72;
+        } else if (type.equals(FloatType.E6M3)) {
+            return 8.119280536755954E14;
         } else {
-            if (type.equals(FloatType.E3M4)) {
-                return 0.9526267f;
-            } else if (type.equals(FloatType.E4M3)) {
-                return 197.465f;
-            } else if (type.equals(FloatType.E5M2)) {
-                return 13562782f;
-            } else {
-                throw new RuntimeException("Invalid type: " + type);
-            }
+            throw new RuntimeException("Invalid type: " + type);
         }
+//        } else {
+//            if (type.equals(FloatType.E3M4)) {
+//                return 0.9526267f;
+//            } else if (type.equals(FloatType.E4M3)) {
+//                return 197.465f;
+//            } else if (type.equals(FloatType.E5M2)) {
+//                return 13562782f;
+//            } else {
+//                throw new RuntimeException("Invalid type: " + type);
+//            }
+//        }
     }
 
     public static void test() {

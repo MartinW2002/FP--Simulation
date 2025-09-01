@@ -102,32 +102,6 @@ public class Matrix {
         this.type = data[0][0].getType();
     }
 
-    // Input represents a matrix with spaces in between columns and semicolons or newlines in between rows
-    public Matrix(String input, int totalBits, int exponentBits) {
-        // Split the input by semicolons or newlines to get rows
-        String[] rows = input.split("[;\\n]");
-        this.rows = rows.length;
-
-        // Initialize the matrix with the number of rows
-        this.data = new CustomFloat[rows.length][];
-
-        // Iterate through the rows
-        for (int i = 0; i < rows.length; i++) {
-            // Split each row by space to get individual elements
-            String[] elements = rows[i].trim().split("\\s+");
-            this.cols = elements.length;
-
-            // Initialize the row for this matrix row
-            this.data[i] = new CustomFloat[elements.length];
-
-            // Parse each element as a CustomFloat
-            for (int j = 0; j < elements.length; j++) {
-                float value = Float.parseFloat(elements[j].trim());
-                this.data[i][j] = new CustomFloat(value, type, null);
-            }
-        }
-    }
-
     // Get the value at a specific row and column
     public CustomFloat get(int row, int col) {
         return data[row][col];
@@ -292,4 +266,16 @@ public class Matrix {
         return (float) Math.sqrt(variance);
     }
 
+    public String getNumberArray() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                stringBuilder.append(data[i][j].toFloat()).append(", ");
+            }
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length() - 2);
+        stringBuilder.append("];");
+        return stringBuilder.toString();
+    }
 }

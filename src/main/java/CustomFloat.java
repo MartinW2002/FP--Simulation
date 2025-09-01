@@ -238,4 +238,8 @@ public class CustomFloat {
         }
         return sb.toString();
     }
+
+    public static CustomFloat MAX_VALUE(FloatType type) {
+        return new CustomFloat(Float.MAX_VALUE, type, null);
+    }
 }
