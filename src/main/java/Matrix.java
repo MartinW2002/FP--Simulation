@@ -24,29 +24,31 @@ public class Matrix {
     }
 
     public static Matrix createRandomMatrix(int rows, int cols, FloatType type) {
-        return new Matrix(rows, cols, type, type.getStdDev());
+        return new Matrix(rows, cols, type, type.getStdDev(), CustomFloat.MAX_VALUE(type).toFloat());
     }
 
-    public static Matrix createRandomMatrix(int rows, int cols, FloatType type, float stdDev) {
-        return new Matrix(rows, cols, type, stdDev);
+    public static Matrix createRandomMatrix(int rows, int cols, FloatType type, float stdDev, float maxValue) {
+        return new Matrix(rows, cols, type, stdDev, maxValue);
     }
 
     // Random
-    private Matrix(int rows, int cols, FloatType type, float stdDev) {
+    private Matrix(int rows, int cols, FloatType type, float stdDev, float maxValue) {
         this.rows = rows;
         this.cols = cols;
         this.type = type;
         this.dividor = (float) (stdDev * Math.sqrt(getNRows()));
 
         this.data = new CustomFloat[rows][cols];
+        float minValue = maxValue * -1;
 
-//        float stdDev = 1.0f / (float) Math.pow(rows, 0.25);
-//        float stdDev = 1.0f;
         if (Main.GAUSS) {
             Random random = new Random();
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
-                    float randomValue = (float) (random.nextGaussian() * stdDev);
+                    float randomValue = Float.MAX_VALUE;
+                    while ((randomValue > 0 && randomValue > maxValue) || (randomValue < 0 && randomValue < minValue)) {
+                        randomValue = (float) (random.nextGaussian() * stdDev);
+                    }
                     this.data[i][j] = new CustomFloat(randomValue, type, null);
                 }
             }
@@ -56,8 +58,11 @@ public class Matrix {
 
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
-                    double tValue = tDistribution.sample();
-                    float scaledValue = (float) (tValue * (stdDev / stddevT));
+                    float scaledValue = Float.MAX_VALUE;
+                    while ((scaledValue > 0 && scaledValue > maxValue) || (scaledValue < 0 && scaledValue < minValue)) {
+                        double tValue = tDistribution.sample();
+                        scaledValue = (float) (tValue * (stdDev / stddevT));
+                    }
                     this.data[i][j] = new CustomFloat(scaledValue, type, null);
                 }
             }

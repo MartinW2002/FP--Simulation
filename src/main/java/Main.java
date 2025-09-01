@@ -13,7 +13,7 @@ public class Main {
 
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
-    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
+    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
     public static int N = 256; // 16, 64, 256 or 1024 - Must be even power of 2
 
 //    public static FloatType[] MAIN_TYPES = {FloatType.E3M4};
@@ -30,10 +30,10 @@ public class Main {
 
         // Redirect System.out to that file
         PrintStream fileOut = new PrintStream(filename);
-        System.setOut(fileOut);
+//        System.setOut(fileOut);
 
-        main_accuracy();
-//        main_kwantisatie();
+//        main_accuracy();
+        main_kwantisatie();
 //        main_order();
 
         fileOut.close();
@@ -53,7 +53,7 @@ public class Main {
 
             double totalMSE = 0;
             for (int i = 0; i < nIter; i++) {
-                Matrix comparisonMatrix = Matrix.createRandomMatrix(size, size, comparisonType, testType.getStdDev());
+                Matrix comparisonMatrix = Matrix.createRandomMatrix(size, size, comparisonType, testType.getStdDev(), CustomFloat.MAX_VALUE(testType).toFloat());
 
                 Matrix testMatrix = new Matrix(comparisonMatrix, testType);
 
@@ -73,7 +73,6 @@ public class Main {
 
         int size = N;
         int nIter = 1024 / N * 16;
-//        int nIter = 2;
 
         System.out.println(size + " x " + size);
         System.out.println(nIter + " iterations");
@@ -368,7 +367,7 @@ public class Main {
     public static float[] resultsArray = new float[TEST2_N * 3];
 
     public static double getKwantisatieFout(FloatType type) {
-//        if (GAUSS) {
+        if (GAUSS) {
         if (type.equals(FloatType.E3M4)) {
             return 0.002827f;
         } else if (type.equals(FloatType.E4M3)) {
@@ -382,17 +381,17 @@ public class Main {
         } else {
             throw new RuntimeException("Invalid type: " + type);
         }
-//        } else {
-//            if (type.equals(FloatType.E3M4)) {
-//                return 0.9526267f;
-//            } else if (type.equals(FloatType.E4M3)) {
-//                return 197.465f;
-//            } else if (type.equals(FloatType.E5M2)) {
-//                return 13562782f;
-//            } else {
-//                throw new RuntimeException("Invalid type: " + type);
-//            }
-//        }
+        } else {
+            if (type.equals(FloatType.E3M4)) {
+                return 0.00234f;
+            } else if (type.equals(FloatType.E4M3)) {
+                return 2.38074f;
+            } else if (type.equals(FloatType.E5M2)) {
+                return 614191f;
+            } else {
+                throw new RuntimeException("Invalid type: " + type);
+            }
+        }
     }
 
     public static void test() {
