@@ -13,8 +13,8 @@ public class Main {
 
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
-    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
-    public static int N = 256; // 16, 64, 256 or 1024 - Must be even power of 2
+    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
+    public static int N = 64; // 16, 64, 256 or 1024 - Must be even power of 2
 
 //    public static FloatType[] MAIN_TYPES = {FloatType.E3M4};
     public static FloatType[] MAIN_TYPES = {FloatType.E3M4, FloatType.E4M3, FloatType.E5M2};
@@ -30,10 +30,10 @@ public class Main {
 
         // Redirect System.out to that file
         PrintStream fileOut = new PrintStream(filename);
-//        System.setOut(fileOut);
+        System.setOut(fileOut);
 
-//        main_accuracy();
-        main_kwantisatie();
+        main_accuracy();
+//        main_kwantisatie();
 //        main_order();
 
         fileOut.close();
@@ -87,16 +87,16 @@ public class Main {
             double kwantFout = getKwantisatieFout(mainType);
 
             // 1024
-            int eBegin = mainType.getExponentBits() + 1;
-            int eEnd = eBegin + 2;
-            int mBegin = 9;
-            int mEnd = 13;
+//            int eBegin = mainType.getExponentBits() + 1;
+//            int eEnd = eBegin + 2;
+//            int mBegin = 9;
+//            int mEnd = 13;
 
             // 16 - 64
-//            int eBegin = mainType.getExponentBits();
-//            int eEnd = eBegin + 2;
-//            int mBegin = 5;
-//            int mEnd = 10;
+            int eBegin = mainType.getExponentBits();
+            int eEnd = eBegin + 2;
+            int mBegin = 5;
+            int mEnd = 10;
 
             // 256
 //            int eBegin = mainType.getExponentBits() + 1;
