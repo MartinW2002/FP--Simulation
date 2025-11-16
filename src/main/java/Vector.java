@@ -43,21 +43,22 @@ public class Vector {
         CustomFloat result = new CustomFloat(0F, accumulator, null);
 
         for (int i = 0; i < data.length; i++) {
+            /** Debugging
             if (accumulator.equals(FloatType.DOUBLE_64)) {
                 Main.stringBuilders[2 * i] = new StringBuilder();
                 Main.stringBuilders[2 * i + 1] = new StringBuilder();
                 Main.stringBuilders[2 * i].append(this.data[i]).append(" * ").append(other.data[i]).append(" = ");
             }
             Main.stringBuilders[2 * i + 1].append(result).append(" -> ");
-
+            **/
 
             CustomFloat toAdd = this.data[i].times(other.data[i], accumulator);
 //            CustomFloat toAdd = this.data[i].times(other.data[i], FPType.DOUBLE_64);
             result = result.plus(toAdd);
-
+            /** Debugging
             Main.stringBuilders[2 * i + 1].append(result).append(" | ");
             Main.stringBuilders[2 * i].append(toAdd).append(" | ");
-
+            **/
             // TODO Fix
 //            if (accumulator == FPType.DOUBLE_64)
 //                Main.resultsArray[3 * i] = result.toFloat();

@@ -13,7 +13,7 @@ public class Main {
 
     //    public static FPType MAIN_TYPE = FPType.E3M4;
     public static int NU = 3;
-    public static boolean GAUSS = false; // True: Gaussian Distribution, False: t-distribution
+    public static boolean GAUSS = true; // True: Gaussian Distribution, False: t-distribution
     public static int N = 64; // 16, 64, 256 or 1024 - Must be even power of 2
 
 //    public static FloatType[] MAIN_TYPES = {FloatType.E3M4};
@@ -29,14 +29,14 @@ public class Main {
         String filename = "output_" + timestamp + ".txt";
 
         // Redirect System.out to that file
-        PrintStream fileOut = new PrintStream(filename);
-        System.setOut(fileOut);
+//        PrintStream fileOut = new PrintStream(filename);
+//        System.setOut(fileOut);
 
-        main_accuracy();
+//        main_accuracy();
 //        main_kwantisatie();
-//        main_order();
+        main_order();
 
-        fileOut.close();
+//        fileOut.close();
     }
 
 
@@ -283,15 +283,15 @@ public class Main {
         long duration = endTime - startTime;
         System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
     }
-
+    */
     public static void main_order() {
         long startTime = System.nanoTime();
 
         int nIter = 100;
-        int size = 200;
+        int size = 512;
 
-        FPType mainType = FPType.E3M4;
-        FPType accType = FPType.E3M5;
+        FloatType mainType = FloatType.E3M4;
+        FloatType accType = new FloatType(4, 8);
 
         double totalErrorRandom = 0;
         double totalErrorAscending = 0;
@@ -309,7 +309,7 @@ public class Main {
             VectorPair ascendingPairAbs = vector1.sortWithCompanion(vector2, true, true);
             VectorPair descendingPairAbs = vector1.sortWithCompanion(vector2, false, true);
 
-            CustomFloat exactResult = vector1.multiply(vector2, FPType.DOUBLE_64);
+            CustomFloat exactResult = vector1.multiply(vector2, FloatType.DOUBLE_64);
 
             CustomFloat randomResult = vector1.multiply(vector2, accType);
             CustomFloat ascendingResult = ascendingPair.v1.multiply(ascendingPair.v2, accType);
@@ -342,6 +342,7 @@ public class Main {
         System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
     }
 
+    /*
     public static void main_test() {
         FPType[] typesToTest = {FPType.E2M4, FPType.E3M4};
         for (FPType type : typesToTest) {
@@ -350,7 +351,7 @@ public class Main {
             System.out.println("---------------");
         }
     }
-    */
+     */
 
     public static void printMatrix(Matrix matrix, int n) {
         System.out.print("{");
