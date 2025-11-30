@@ -34,8 +34,11 @@ public class Main {
 
 //        main_accuracy();
 //        main_kwantisatie();
-        main_order();
 
+        for (FloatType floatType : MAIN_TYPES) {
+            System.out.println("Ordering " + floatType);
+            main_order(floatType);
+        }
 //        fileOut.close();
     }
 
@@ -73,6 +76,7 @@ public class Main {
 
         int size = N;
         int nIter = 1024 / N * 16;
+//        int nIter = 16;
 
         System.out.println(size + " x " + size);
         System.out.println(nIter + " iterations");
@@ -85,6 +89,12 @@ public class Main {
             System.out.println(mainType + " - " + (GAUSS ? "Gaussian" : "T-distribution"));
 
             double kwantFout = getKwantisatieFout(mainType);
+
+            // Test
+//            int eBegin = 4;
+//            int eEnd = 4;
+//            int mBegin = 8;
+//            int mEnd = 8;
 
             // 1024
 //            int eBegin = mainType.getExponentBits() + 1;
@@ -284,16 +294,16 @@ public class Main {
         System.out.println("Execution time: " + duration / 1_000_000_000 + " s");
     }
     */
-    public static void main_order() {
+    public static void main_order(FloatType mainType) {
         long startTime = System.nanoTime();
 
-        int nIter = 100;
-        int size = 512;
+        int nIter = 10000;
+        int size = 64;
 
-        FloatType mainType = FloatType.E3M4;
-        FloatType accType = new FloatType(4, 8);
+        FloatType accType = new FloatType(mainType.getExponentBits() + 1, mainType.getMantissaBits() + 6 - 2);
 
         double totalErrorRandom = 0;
+        double totalErrorRandom2 = 0;
         double totalErrorAscending = 0;
         double totalErrorDescending = 0;
         double totalErrorAscendingAbs = 0;
@@ -303,6 +313,8 @@ public class Main {
 
             Vector vector1 = Vector.random(size, mainType);
             Vector vector2 = Vector.random(size, mainType);
+
+            CustomFloat randomResult2 = vector1.multiply(vector2, accType);
 
             VectorPair ascendingPair = vector1.sortWithCompanion(vector2, true, false);
             VectorPair descendingPair = vector1.sortWithCompanion(vector2, false, false);
@@ -318,22 +330,29 @@ public class Main {
             CustomFloat descendingResultAbs = descendingPairAbs.v1.multiply(descendingPairAbs.v2, accType);
 
             totalErrorRandom += Math.pow(exactResult.toFloat() - randomResult.toFloat(), 2);
+            totalErrorRandom2 += Math.pow(exactResult.toFloat() - randomResult2.toFloat(), 2);
             totalErrorAscending += Math.pow(exactResult.toFloat() - ascendingResult.toFloat(), 2);
             totalErrorDescending += Math.pow(exactResult.toFloat() - descendingResult.toFloat(), 2);
             totalErrorAscendingAbs += Math.pow(exactResult.toFloat() - ascendingResultAbs.toFloat(), 2);
             totalErrorDescendingAbs += Math.pow(exactResult.toFloat() - descendingResultAbs.toFloat(), 2);
+
+//            System.out.println(exactResult.toFloat() + " " + randomResult.toFloat());
         }
         double randomMSE = totalErrorRandom / nIter;
+        double randomMSE2 = totalErrorRandom2 / nIter;
         double ascendingMSE = totalErrorAscending / nIter;
         double descendingMSE = totalErrorDescending / nIter;
         double ascendingAbsMSE = totalErrorAscendingAbs / nIter;
         double descendingAbsMSE = totalErrorDescendingAbs / nIter;
 
         System.out.println("Random: " + randomMSE);
+        System.out.println("Random2: " + randomMSE2);
         System.out.println("Ascending: " + ascendingMSE);
         System.out.println("Descending: " + descendingMSE);
         System.out.println("Ascending Abs: " + ascendingAbsMSE);
         System.out.println("Descending Abs: " + descendingAbsMSE);
+
+        System.out.println("Best vs Worst case: " + (descendingAbsMSE / ascendingAbsMSE));
 
         System.out.println("------------------");
 

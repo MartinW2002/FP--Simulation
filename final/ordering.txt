@@ -1,0 +1,33 @@
+N = 64 ; 10000 iterations
+
+
+Ordering E3M4 - with E4M8
+Random: 1.7688333988189698E-6
+Random2: 1.7688333988189698E-6
+Ascending: 2.163708209991455E-6
+Descending: 2.1359384059906004E-6
+Ascending Abs: 2.5354623794555664E-7
+Descending Abs: 4.6813130378723145E-6
+Best vs Worst case: 18.463350416098546
+------------------
+Execution time: 3 s
+Ordering E4M3 - with E5M7
+Random: 4.972616212035063E-6
+Random2: 4.972616212035063E-6
+Ascending: 5.660729821829591E-6
+Descending: 5.713295204623137E-6
+Ascending Abs: 2.1432045046822168E-6
+Descending Abs: 7.526309635431971E-6
+Best vs Worst case: 3.5117085742351652
+------------------
+Execution time: 3 s
+Ordering E5M2 - with E6M6
+Random: 2.5285474002961338E-5
+Random2: 2.5285474002961338E-5
+Ascending: 2.978415300466054E-5
+Descending: 2.974250096056835E-5
+Ascending Abs: 8.55808788990885E-6
+Descending Abs: 4.143336454643191E-5
+Best vs Worst case: 4.84142779081382
+------------------
+Execution time: 2 s
